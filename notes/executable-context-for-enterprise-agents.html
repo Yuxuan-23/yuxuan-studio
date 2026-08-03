@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f4f2ec" /><title>从自然语言到 Context Contract：企业 Agent 的产品建模｜宇轩 Yuxuan</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs'
+    mermaid.initialize({ startOnLoad: true, theme: 'base', securityLevel: 'loose', themeVariables: { fontFamily: 'ui-sans-serif, system-ui, sans-serif', primaryColor: '#eef5ff', primaryTextColor: '#18355f', primaryBorderColor: '#9eb7d8', lineColor: '#6583a9', secondaryColor: '#fff5e8', tertiaryColor: '#f4f2ec' } })
+  </script>
+</head><body class="notes-page">
+  <a class="skip-link" href="#article">跳到主要内容</a>
+  <header class="site-header"><div class="header-inner">
+    <a class="brand" href="../index.html#top" aria-label="返回宇轩 Yuxuan 首页"><span class="brand-flower" aria-hidden="true">✳</span><span>宇轩 <i>YUXUAN</i></span></a>
+    <nav class="site-nav" aria-label="主导航"><a href="../index.html#work">项目</a><a href="../index.html#bring">能力</a><a href="../blog.html" aria-current="page">笔记</a><a href="../index.html#about">关于</a></nav>
+  </div></header>
+  <main class="notes-main" id="article"><div class="notes-wrap"><div class="article-shell">
+    <aside class="article-toc" aria-label="本章目录"><small>本章目录 · CONTENTS</small><ol class="article-toc-list article-toc-root"><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-1">一句话为什么还不能执行</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-2">一份 Context Contract 应该有什么</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-3">把信息分成五种状态</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-4">不确定性应该改变界面</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-5">同一个上下文，服务两类用户</a></div></li><li class="article-toc-item article-toc-depth-0 article-toc-has-children"><div class="article-toc-row"><button class="article-toc-toggle" type="button" aria-expanded="true" aria-controls="toc-executable-context-for-enterprise-agents-5" aria-label="折叠 让上下文成为单一事实源"><span aria-hidden="true"></span></button><a class="article-toc-link" href="#sec-6">让上下文成为单一事实源</a></div><ol class="article-toc-list" id="toc-executable-context-for-enterprise-agents-5"><li class="article-toc-item article-toc-depth-1"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-7">1. 保留原始值，也保留标准值</a></div></li><li class="article-toc-item article-toc-depth-1"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-8">2. 每个字段都记录来源</a></div></li><li class="article-toc-item article-toc-depth-1"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-9">3. 组件只写自己的字段</a></div></li><li class="article-toc-item article-toc-depth-1"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-10">4. 下一步动作由状态约束</a></div></li><li class="article-toc-item article-toc-depth-1"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-11">5. 评测读取同一份上下文</a></div></li></ol></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-12">这套方法如何迁移</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-13">代价与边界</a></div></li></ol></aside>
+    <article><a class="article-back" href="../blog.html">← 返回 Product Notes</a>
+      <header class="article-header"><p class="article-series">上下文工程</p><h1>从自然语言到 Context Contract：企业 Agent 的产品建模</h1><p class="article-dek">把自然语言组织成可执行的任务上下文</p><div class="article-meta">发布 2026-07-17 · 约 9 分钟<span class="article-tags" aria-label="文章标签"><span>enterprise-agent</span><span>ai-product</span><span>context-engineering</span><span>human-in-the-loop</span><span>product-design-notes</span></span></div></header>
+      <div class="article-body"><blockquote>
+<p>它打不开了，帮我看一下。</p>
+</blockquote>
+<p>企业产品里的很多任务，都从这样一句缺少上下文的话开始。</p>
+<p>有一次，我把一份 AI 诊断产品的初步设计交给生成式工具做页面。几分钟后，页面里出现了候选场景、五段推理过程、置信度、知识命中和一组漂亮的决策卡。</p>
+<p>它比我的原稿更像一套成熟产品。</p>
+<p>我顺着页面逐项往后问：置信度由谁计算？候选场景从哪里来？链路节点有没有完整配置？用户没有提供时间，日志检索该查哪个窗口？</p>
+<p>很多问题没有答案。页面已经替后端作出了决定，数据和规则还没跟上。</p>
+<p>最后，我们删掉了一部分看起来很聪明的内容，只保留轻量候选、缺失信息提示和用户确认。这个删改把注意力带回了一个更基础的问题：当用户只说一句含糊的话时，系统究竟拿什么去驱动后面的工具、知识和流程？</p>
+<p>在这篇笔记里，我暂且把这个对象称为 <strong>可执行上下文（Executable Context）</strong>，用来指代一份可确认、可执行、可追溯的任务上下文。</p>
+<figure><img src="../../site/blog/assets/01-executable-context-infographic.png" alt="" loading="lazy"></figure>
+
+<div class="callout callout-abstract">
+<p class="callout-title">✦ 核心判断</p>
+<p>企业 Agent 的第一层产品能力，是把模糊意图整理成一份可确认、可执行、可追溯的任务上下文。聊天、表单、工具、RAG 和评测都围绕这份上下文协作。</p>
+</div>
+<h2 id="sec-1">一句话为什么还不能执行</h2>
+<p>用户很少会按系统需要的格式描述问题。</p>
+<p>在故障诊断里，他可能只说：</p>
+<blockquote>
+<p>验收环境里登录一直失败，页面提示网络异常，帮我看一下。</p>
+</blockquote>
+<p>这句话表达了困扰，还没有形成任务。系统至少需要继续确认：</p>
+<ul>
+<li>哪个环境和业务场景</li>
+<li>大致发生在什么时间</li>
+<li>有什么可以检索的关键字</li>
+<li>用户看到的是页面提示、接口错误，还是一段日志</li>
+<li>哪些应用或节点可能相关</li>
+<li>当前证据能支持多强的结论</li>
+</ul>
+<p>同样的问题也会出现在其他企业场景。</p>
+<p>销售说帮我看看这个客户，合同人员说这条有风险，客服说用户一直投诉扣费，运营说昨天转化突然掉了。人能凭上下文理解这些话，系统需要一份明确的任务对象，才能决定下一步查什么、问什么、调用什么。</p>
+<p>如果没有这个对象，每个环节都会重新猜一遍用户的意思。对话猜一次，工具参数再猜一次，报告生成时又猜一次。最后的答案可能很流畅，执行链路里却混入了几套不同的假设。</p>
+<h2 id="sec-2">一份 Context Contract 应该有什么</h2>
+<p>我在光溯的公开 Demo 里，把自然语言入口和结构化检索入口汇入同一份 <code>DiagnosticContext</code>。换到其他领域，可以把它改名为 <code>TaskContext</code>、<code>CaseContext</code> 或 <code>OpportunityContext</code>。名称并不重要，重要的是它成为系统各环节共享的合同。</p>
+<p>下面是一份经过简化的通用结构：</p>
+<div class="highlight"><pre><span></span><code><span class="nt">task_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TASK-001</span><span class="w"></span>
+<span class="nt">raw_input</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;验收环境里登录一直失败，页面提示网络异常&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attachments</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"></span>
+
+<span class="nt">intent</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;incident_diagnosis&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;model_extraction&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">confidence</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;medium&quot;</span><span class="w"></span>
+
+<span class="nt">facts</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;验收环境&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;confirmed&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;user&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">business_scenario</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;登录&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;extracted&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;user_text&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">time_window</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span><span class="w"></span>
+<span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;missing&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">searchable_key</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span><span class="w"></span>
+<span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;missing&quot;</span><span class="w"></span>
+
+<span class="nt">candidates</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;SCENE-LOGIN-01&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;移动端登录&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;awaiting_confirmation&quot;</span><span class="w"></span>
+
+<span class="nt">execution</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">current_stage</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;context_completion&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">allowed_next_actions</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;ask_for_time_window&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;ask_for_searchable_key&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;confirm_candidate_scene&quot;</span><span class="w"></span>
+
+<span class="nt">evidence</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"></span>
+<span class="nt">decision</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">conclusion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span><span class="w"></span>
+<span class="w">  </span><span class="nt">strength</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;insufficient&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">next_actions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"></span>
+</code></pre></div>
+
+<p>这份结构包含五类信息：</p>
+<ol>
+<li><strong>原始输入</strong>：保留用户最初说了什么，避免后续只剩模型摘要。</li>
+<li><strong>事实槽位</strong>：记录字段值、来源和确认状态。</li>
+<li><strong>候选与不确定性</strong>：系统可以提出可能性，同时保留用户确认权。</li>
+<li><strong>执行状态</strong>：明确当前阶段和允许发生的下一步动作。</li>
+<li><strong>证据与决策</strong>：结论必须能回到日志、文档、工具结果或用户确认。</li>
+</ol>
+<p>这也是合同一词的含义。前端知道该展示哪些待确认字段，Workflow 知道下一步可以走哪条边，Tool 知道参数从哪里取，RAG 知道需要检索哪个领域，Trace 和 Eval 也能读取同一份状态。</p>
+<h2 id="sec-3">把信息分成五种状态</h2>
+<p>很多 Agent 产品只给字段加一个 <code>confidence</code>。一个 0.87 的数字看起来精确，却没有告诉用户这个字段来自哪里，也没有说明接下来能否使用。</p>
+<p>我更倾向于先区分信息状态：</p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>含义</th>
+<th>产品动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>observed</td>
+<td>工具或附件中直接观察到</td>
+<td>保留原始来源，可进入证据池</td>
+</tr>
+<tr>
+<td>extracted</td>
+<td>模型从用户输入中提取</td>
+<td>展示给用户，按风险决定是否确认</td>
+</tr>
+<tr>
+<td>confirmed</td>
+<td>用户或确定性系统已确认</td>
+<td>可作为后续执行参数</td>
+</tr>
+<tr>
+<td>inferred</td>
+<td>系统结合多项证据推断</td>
+<td>展示依据与结论强度，不覆盖事实</td>
+</tr>
+<tr>
+<td>missing</td>
+<td>当前任务需要但尚未获得</td>
+<td>发起追问、换工具，或进入降级路径</td>
+</tr>
+</tbody>
+</table>
+<p>这几个状态解决了一个常见混乱：系统识别到什么、用户确认了什么、工具证明了什么、模型推断了什么，应该分别记录。</p>
+<p>比如页面提示网络异常，只能作为用户观察到的现象。网络工具返回连通性正常后，系统仍需检查目标服务和应用依赖。它不能因为提示里有网络两个字，就提前把问题归为网络故障。</p>
+<h2 id="sec-4">不确定性应该改变界面</h2>
+<p>不确定性很难靠一个百分比被用户理解。它更适合直接改变下一步交互。</p>
+<ul>
+<li>缺少关键字段：继续追问。</li>
+<li>出现多个合理候选：展示少量候选，让用户确认或拒绝。</li>
+<li>工具结果冲突：保留候选集合，提示需要补充证据。</li>
+<li>证据不足：明确无法收敛，转人工或结束任务。</li>
+<li>高风险写操作：在执行前展示对象、影响范围和回退方式。</li>
+</ul>
+<p>这个设计让 Human-in-the-loop 成为流程的一部分。用户的确认直接承担三件事：修正上下文、控制风险、产生新的标注数据。</p>
+<figure><img src="../../site/blog/assets/01-context-confirmation-comic.png" alt="" loading="lazy"></figure>
+
+<h2 id="sec-5">同一个上下文，服务两类用户</h2>
+<p>企业软件里常见两类用户。</p>
+<p>一类用户知道业务现象，不熟悉系统结构。他们适合从自然语言开始，由 Agent 帮忙补齐条件。</p>
+<p>另一类用户熟悉应用、字段和工具。他们更希望直接选择环境、节点、时间窗口和检索条件。</p>
+<p>这两类入口可以共存：</p>
+<pre class="mermaid">flowchart LR
+    A[&quot;自然语言 / 截图&quot;] --&gt; C[&quot;Context Builder&quot;]
+    B[&quot;结构化表单 / 专业检索&quot;] --&gt; C
+    C --&gt; D{&quot;关键字段是否足够&quot;}
+    D --&gt;|否| E[&quot;追问 / 候选确认&quot;]
+    E --&gt; C
+    D --&gt;|是| F[&quot;Task Context&quot;]
+    F --&gt; G[&quot;Workflow 路由&quot;]
+    F --&gt; H[&quot;Tools&quot;]
+    F --&gt; I[&quot;RAG&quot;]
+    G --&gt; J[&quot;Evidence Pool&quot;]
+    H --&gt; J
+    I --&gt; J
+    J --&gt; K[&quot;Decision / Next Action&quot;]
+    F --&gt; L[&quot;Trace &amp; Eval&quot;]
+    J --&gt; L
+    K --&gt; L
+</pre>
+
+<p>自然语言入口帮助用户构造上下文，结构化入口让专家直接编辑上下文。后续执行层只接收同一种任务对象。这样做能减少重复逻辑，也让历史任务可以在两种入口之间恢复和继续。</p>
+<h2 id="sec-6">让上下文成为单一事实源</h2>
+<p>一份字段表很容易写。真正困难的是约束每个组件如何读写它。</p>
+<p>我会给 Context Contract 加五条规则。</p>
+<h3 id="sec-7">1. 保留原始值，也保留标准值</h3>
+<p>用户说四套环境，系统可以映射成标准环境 ID。两者都要保留。原始值用于回放和解释，标准值用于工具调用。</p>
+<h3 id="sec-8">2. 每个字段都记录来源</h3>
+<p>来源至少要区分用户、附件解析、模型提取、知识检索、确定性工具和人工审核。最终报告引用证据时，系统才知道哪些内容可以支撑结论。</p>
+<h3 id="sec-9">3. 组件只写自己的字段</h3>
+<p>场景识别模块写候选场景，日志工具写日志证据，根因推理写候选结论。下游组件不静默改写上游事实。发生冲突时新增一条状态或证据，并在整合阶段处理。</p>
+<h3 id="sec-10">4. 下一步动作由状态约束</h3>
+<p>当时间窗口缺失时，系统可以追问，也可以先做低成本预检。它不能悄悄补一个时间继续执行。对高风险场景，<code>allowed_next_actions</code> 还能接权限和审批策略。</p>
+<h3 id="sec-11">5. 评测读取同一份上下文</h3>
+<p>评测不能只比较最终答案。它还要检查：关键字段有没有识别，工具参数是否来自已确认信息，必备证据是否出现，禁止断言有没有进入结论，跳过某个分支时是否记录了原因。</p>
+<p>当 Trace 和 Eval 使用同一份 Context，失败才有机会被归因到具体环节。检索没命中、工具没执行、字段抽错和模型推理失误，会留下不同的痕迹。</p>
+<h2 id="sec-12">这套方法如何迁移</h2>
+<p>可执行上下文是一种领域无关的产品抽象。变化的是字段和工具，稳定的是组织方式。</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>原始输入</th>
+<th>Context 中的关键字段</th>
+<th>后续动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>客服 Agent</td>
+<td>用户说又被扣费了</td>
+<td>账户、订单、扣费时间、渠道、历史工单</td>
+<td>查账单、匹配政策、生成处理建议</td>
+</tr>
+<tr>
+<td>销售 Copilot</td>
+<td>帮我看看这个客户</td>
+<td>客户阶段、近期互动、关键人、机会金额、风险</td>
+<td>拉取 CRM、补充信息、生成跟进计划</td>
+</tr>
+<tr>
+<td>合同审查</td>
+<td>这条有风险吗</td>
+<td>条款类型、主体、金额、期限、适用模板、风险偏好</td>
+<td>检索制度、比对模板、提交法务确认</td>
+</tr>
+<tr>
+<td>运营分析 Agent</td>
+<td>昨天转化掉了</td>
+<td>指标口径、时间范围、渠道、实验、分群</td>
+<td>查询数据、拆解漏斗、生成假设</td>
+</tr>
+<tr>
+<td>IT 诊断 Agent</td>
+<td>登录一直失败</td>
+<td>环境、场景、时间窗、关键字、链路节点</td>
+<td>查日志、查服务、检索知识、形成证据链</td>
+</tr>
+</tbody>
+</table>
+<p>迁移时可以先问四个问题：</p>
+<ol>
+<li>用户最常带着什么样的模糊输入进来？</li>
+<li>哪些字段缺失时，系统必须停下来确认？</li>
+<li>哪些信息来自事实工具，哪些只能由模型推断？</li>
+<li>最终结论需要引用哪些证据，才能进入下一步业务动作？</li>
+</ol>
+<p>这四个问题往往比先选框架更早决定产品形态。</p>
+<h2 id="sec-13">代价与边界</h2>
+<p>Context Contract 会增加前期设计成本。团队需要维护 schema、字段状态、来源、迁移版本和读写权限。简单问答或低风险创作工具未必需要这套结构。</p>
+<p>当任务具备以下特征时，这笔成本更容易得到回报：</p>
+<ul>
+<li>输入长期不完整，需要多轮补充</li>
+<li>任务会调用多个系统或工具</li>
+<li>结论影响真实业务动作</li>
+<li>过程需要审计、回放或人工接管</li>
+<li>产品需要通过评测持续迭代</li>
+</ul>
+<p>光溯的公开 Demo 目前用一条匿名案例验证这套思路。真实生产接入还需要权限、数据治理、异步任务、监控和更完整的评测集。这些工作不会被一份漂亮的 Context Schema 自动解决。</p>
+<p>它至少让所有人看见同一件事：我们已经知道什么，还缺什么，接下来凭什么行动。</p>
+</div></div>
+    </article>
+  </div></div></main>
+  <a class="note-companion" href="../light-world.html" aria-label="去光的阅读室，认识小光" title="小光在这里陪你阅读"></a>
+  <script>
+    document.querySelectorAll('.article-toc-toggle').forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true'
+        const children = document.getElementById(toggle.getAttribute('aria-controls'))
+        toggle.setAttribute('aria-expanded', String(!expanded))
+        toggle.setAttribute('aria-label', (expanded ? '展开 ' : '折叠 ') + toggle.closest('.article-toc-item').querySelector('.article-toc-link').textContent)
+        children.hidden = expanded
+      })
+    })
+  </script>
+</body></html>

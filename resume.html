@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="zh-CN" style="font-size: 10pt;">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --body: 13.333px;
+    --lh: 1.38;
+    --section: 6px;
+    --article: 5px;
+    --item: 1.2px;
+    --ink: #1f2933;
+    --muted: #667085;
+    --line: #d9dee7;
+    --accent: #0f766e;
+    --dark: #115e59;
+  }
+
+  * { box-sizing: border-box; }
+
+  html,
+  body {
+    margin: 0;
+    color: var(--ink);
+    background: #eef1f4;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Microsoft YaHei", sans-serif;
+    font-size: var(--body);
+    line-height: var(--lh);
+  }
+
+  main {
+    width: 210mm;
+    height: 297mm;
+    margin: 18px auto;
+    background: #fff;
+    box-shadow: 0 18px 50px rgba(31, 41, 51, 0.13);
+    overflow: hidden;
+  }
+
+  header {
+    display: grid;
+    grid-template-columns: 25mm 1fr 25mm;
+    gap: 10px;
+    align-items: center;
+    padding-bottom: 8px;
+    border-bottom: 1.5px solid var(--ink);
+  }
+
+  .identity { text-align: center; }
+  h1 { margin: 0 0 4px; font-size: 27px; line-height: 1; }
+  .target,
+  strong { color: var(--dark); font-weight: 760; }
+  .target { font-size: 12.3px; }
+  .contact { color: var(--muted); font-size: 9.6px; }
+  .meta,
+  .time { color: #778294; font-size: 9pt; line-height: 1.22; }
+  .contact { margin-top: 5px; }
+
+  .photo {
+    width: 26mm;
+    height: 31mm;
+    object-fit: cover;
+    object-position: center 32%;
+    border: 1px solid #d7dde6;
+    border-radius: 4px;
+  }
+
+  .back-home {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    padding: 9px 13px;
+    border: 1px solid #d9dee7;
+    border-radius: 8px;
+    color: #475467;
+    background: rgba(255,255,255,.92);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(31,41,51,.08);
+  }
+
+  section { margin-top: var(--section); }
+  h2 {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 5px;
+    color: #475467;
+    font-size: 11.7px;
+    line-height: 1.18;
+  }
+  h2::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+  h3 { margin: 0; font-size: 10.5pt; line-height: 1.2; }
+  .featured-project h3 { font-size: 10.9pt; }
+
+  .row-title {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: baseline;
+  }
+
+  article {
+    padding-bottom: 0;
+    border-bottom: 0;
+    break-inside: avoid;
+  }
+  article + article { margin-top: 7px; }
+  article:last-child { padding: 0; }
+
+  .edu-row {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr 0.48fr auto;
+    gap: 12px;
+    align-items: baseline;
+    padding: 2.5px 4px 3.5px 9px;
+    border-bottom: 1px solid #edf1f5;
+  }
+  .edu-row span:not(.edu-school):not(.time) {
+    color: var(--muted);
+    text-align: center;
+  }
+  .edu-school { font-size: 11px; font-weight: 780; }
+
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 5px;
+  }
+  .section-heading h2 { display: block; margin: 0; }
+  .section-heading h2::after { display: none; }
+  .section-rule {
+    display: block;
+    height: 0;
+    flex: 1;
+    border-top: 1px solid #e1e5ec;
+  }
+
+  .separator { margin: 0 0.38em; color: #98a2b3; font-weight: 500; }
+  .project-highlight { white-space: nowrap; }
+  .project-links-row { margin-top: 1px; color: #778294; font-size: 9pt; line-height: 1.22; }
+  .resume-link {
+    color: var(--dark);
+    font-weight: 760;
+    text-decoration: underline;
+    text-underline-offset: 1px;
+  }
+
+  .bullet-list { margin: 3.5px 0 0; }
+  .bullet { margin: var(--item) 0; }
+  .featured-project .bullet {
+    text-align: justify;
+    text-justify: inter-ideograph;
+  }
+  .metric { white-space: nowrap; }
+  .bullet::before {
+    content: "•";
+    display: inline;
+    margin-right: 5px;
+    color: var(--dark);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 0;
+    vertical-align: -0.08em;
+  }
+  .featured-project { margin-bottom: 7px; }
+  .meta-label { font-weight: 500; color: #778294; }
+
+  @page { size: A4; margin: 0; }
+
+  @media print {
+    html,
+    body {
+      background: #fff;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    main { margin: 0; box-shadow: none; }
+    .time,
+    .meta,
+    .work-role,
+    .project-title-meta,
+    .meta-label { color: #667085 !important; }
+    .resume-link { color: #115e59 !important; }
+    .section-rule { border-color: #e1e5ec !important; }
+    .back-home { display: none; }
+  }
+</style>
+<title>王宇轩｜AI 产品经理</title>
+</head>
+<body>
+<a class="back-home" href="./index.html#top">← 返回个人网站</a>
+<main id="page" style="padding: 12.7mm;">
+<div id="content">
+<header style="border-bottom: 0px;">
+<div>
+</div>
+<div class="identity">
+<h1 style="font-size: 20pt;">王宇轩</h1>
+<div class="target" style="font-size: 11.5pt;">AI 产品经理｜智能体产品与复杂场景产品化</div>
+<div class="contact" style="font-size: 10pt;">
+<span>邮箱：wangyx9621@163.com</span>
+</div>
+</div>
+<img class="photo" src="./assets/resume-photo.jpg" alt="王宇轩证件照">
+</header>
+<section>
+<div class="section-heading">
+<h2 style="font-size: 12pt;">核心优势</h2>
+<span class="section-rule" aria-hidden="true">
+</span>
+</div>
+<div class="bullet-list skills-list">
+<div class="bullet">
+<strong>企业级 AI 产品 0→1：</strong>主导中心级 AI 智能诊断产品从定义、MVP 到上线迭代，推动多个场景进入真实业务使用。</div>
+<div class="bullet">
+<strong>复杂场景产品化：</strong>基于 5 年复杂系统与跨团队交付经验，将流程、知识与协作规则抽象为可配置、可复核、可扩展的产品能力。</div>
+<div class="bullet">
+<strong>智能体与质量闭环：</strong>具备意图路由、多智能体编排、RAG、工具调用与人机协作设计经验，通过证据追踪、Bad Case 归因与版本回归持续优化产品效果。</div>
+</div>
+</section>
+<section>
+<div class="section-heading">
+<h2 style="font-size: 12pt;">教育背景</h2>
+<span class="section-rule" aria-hidden="true">
+</span>
+</div>
+<div class="edu-row" style="border-bottom: 0px;">
+<span class="edu-school" style="font-size: 10pt;">香港大学</span>
+<span>计算机科学</span>
+<span>硕士</span>
+<span class="time" style="font-size: 9pt;">2019.09 - 2020.12</span>
+</div>
+<div class="edu-row" style="border-bottom: 0px;">
+<span class="edu-school" style="font-size: 10pt;">中山大学</span>
+<span>软件工程</span>
+<span>本科</span>
+<span class="time" style="font-size: 9pt;">2015.09 - 2019.06</span>
+</div>
+</section>
+<section>
+<div class="section-heading">
+<h2 style="font-size: 12pt;">工作经历</h2>
+<span class="section-rule" aria-hidden="true">
+</span>
+</div>
+<article>
+<div class="row-title">
+<h3>中国工商银行 · 业务研发中心</h3>
+<span class="time" style="font-size: 9pt;">2021.03 - 2026.06</span>
+</div>
+<div class="meta" style="font-size: 9pt;">职级：金融科技经理三级 · 岗位：应用技术岗</div>
+<div class="bullet-list ">
+<div class="bullet">负责消息服务、数据报送、电子影像等公共平台的技术改造验收、方案评审、跨团队交付与风险治理。</div>
+<div class="bullet">主导多项自助工具建设，沉淀复杂链路分析与证据核验方法，支撑后续智能诊断产品定义。</div>
+</div>
+</article>
+</section>
+<section>
+<div class="section-heading">
+<h2 style="font-size: 12pt;">重点项目</h2>
+<span class="section-rule" aria-hidden="true">
+</span>
+</div>
+<article class="featured-project">
+<div class="row-title">
+<h3>「光溯」企业智能诊断产品：年度中心级 AI 大模型创新项目<span class="project-highlight"> ｜全中心 8 项之一</span>
+</h3>
+<span class="time" style="font-size: 9pt;">2025.05 - 2026.06</span>
+</div>
+<div class="meta" style="font-size: 9pt;">
+<span class="meta-label">角色：</span>产品 Owner · Agent 架构负责人 · 0→1 产品定义与体验设计</div>
+<div class="project-links-row" style="font-size: 9pt;">
+<span class="meta-label">产品案例：</span>
+<a class="resume-link" href="https://litrace.site">litrace.site</a> · <span class="meta-label">在线 Demo：</span>
+<a class="resume-link" href="https://app.litrace.site">app.litrace.site</a>
+</div>
+<div class="bullet-list ">
+<div class="bullet">
+<strong>产品定义与业务落地：</strong>针对跨应用定位依赖专家、知识分散等痛点，主导产品定位、MVP 与高保真原型；统筹 7 个部门推动复杂链路诊断、领域问答和日志分析进入真实业务使用。</div>
+<div class="bullet">
+<strong>产品化与规模扩展：</strong>设计自定义诊断场景与链路配置，使单点能力可复用、可扩展；建设覆盖 2000+ 应用、深度治理 35+ 核心应用的知识底座，整合配置、错误码、接口及常见问题方案。</div>
+<div class="bullet">
+<strong>智能体编排与跨层诊断：</strong>设计证据驱动的智能体工作流，通过意图识别完成业务、应用、系统、网络四领域路由，结合场景与链路构建诊断上下文；沿链路取证并按异常调用 RAG 与专项工具，实现跨层根因分析。</div>
+<div class="bullet">
+<strong>质量治理与评测：</strong>围绕关键能力、端到端任务和版本变更建立评测回归机制，结合 Gold Set、Bad Case 归因与人工抽检，持续优化根因命中、证据完整性和诊断时延。</div>
+<div class="bullet">
+<strong>业务价值：</strong>产品面向中心全部业务与技术部门；复杂长链路诊断由小时级缩短至分钟级，跨团队协同范围收敛 <span class="metric">75%</span>，根因定位命中率 <span class="metric">&gt;85%</span>，用户满意度达 <span class="metric">4.8/5</span>。</div>
+</div>
+</article>
+<article>
+<div class="row-title">
+<h3>公共平台技术改造与工具建设</h3>
+<span class="time" style="font-size: 9pt;">2021.03 - 2026.06</span>
+</div>
+<div class="meta" style="font-size: 9pt;">
+<span class="meta-label">角色：</span>技术改造项目负责人</div>
+<div class="bullet-list ">
+<div class="bullet">牵头日均亿级消息平台信创改造验收，统筹架构与方案评审、全链路测试、切流回退及风险处置，覆盖数据一致性、批量调度和高可用验证，保障平台平稳迁移与连续服务。</div>
+<div class="bullet">围绕消息、电子影像与批量任务的高频核查场景，设计并推动协议查询、覆盖率检查、版本控制、交易覆盖统计与历史追溯等自助工具落地，将分散人工查询沉淀为统一复用能力。</div>
+</div>
+</article>
+<article>
+<div class="row-title">
+<h3>数据建模创新大赛：长尾客户资产提级预测<span class="project-highlight">｜全中心 62 支队伍第 5 名</span></h3>
+<span class="time" style="font-size: 9pt;">2024.09</span>
+</div>
+<div class="meta" style="font-size: 9pt;">
+<span class="meta-label">角色：</span>队长 · 主力建模负责人</div>
+<div class="bullet-list ">
+<div class="bullet">将低资产长尾客户的精准圈选需求转化为资产提级概率预测与排序问题，短期内完成业务理解与数据探查；基于营销触达、活动参与、交易行为及资产变化等维度开展特征工程，从 6340 万训练样本中筛选 106 个有效特征。</div>
+<div class="bullet">使用 XGBoost 构建模型并完成特征重要性与变量贡献分析，AUC 达 0.9339；成果提交数据运营部门，用于客户分层、高潜客户识别与精准触达策略参考。</div>
+</div>
+</article>
+</section>
+<section>
+<div class="section-heading">
+<h2 style="font-size: 12pt;">专利与荣誉</h2>
+<span class="section-rule" aria-hidden="true">
+</span>
+</div>
+<div class="bullet-list ">
+<div class="bullet">国家授权发明专利 2 项，其中第一作者 1 项，涉及知识图谱技术与场景资产结构化。</div>
+<div class="bullet">四年多晋升至专业高阶职级，通过人才加速通道提前一年竞聘；近三年连续入选骨干人才梯队。</div>
+</div>
+</section>
+</div>
+</main>
+</body>
+</html>
