@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f4f2ec" /><title>Harness 不是 Agent SDK：一张图理解模型之外的 Agent 工程｜宇轩 Yuxuan</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs'
+    mermaid.initialize({ startOnLoad: true, theme: 'base', securityLevel: 'loose', themeVariables: { fontFamily: 'ui-sans-serif, system-ui, sans-serif', primaryColor: '#eef5ff', primaryTextColor: '#18355f', primaryBorderColor: '#9eb7d8', lineColor: '#6583a9', secondaryColor: '#fff5e8', tertiaryColor: '#f4f2ec' } })
+  </script>
+</head><body class="notes-page">
+  <a class="skip-link" href="#article">跳到主要内容</a>
+  <header class="site-header"><div class="header-inner">
+    <a class="brand" href="../index.html#top" aria-label="返回宇轩 Yuxuan 首页"><span class="brand-flower" aria-hidden="true">✳</span><span>宇轩 <i>YUXUAN</i></span></a>
+    <nav class="site-nav" aria-label="主导航"><a href="../index.html#work">项目</a><a href="../index.html#bring">能力</a><a href="../blog.html" aria-current="page">笔记</a><a href="../index.html#about">关于</a></nav>
+  </div></header>
+  <main class="notes-main" id="article"><div class="notes-wrap"><div class="article-shell">
+    <aside class="article-toc" aria-label="本章目录"><small>本章目录 · CONTENTS</small><ol class="article-toc-list article-toc-root"><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-1">先说明：Harness 还不是边界完全统一的标准术语</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-2">从入门图升级到分层图</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-3">第一层：产品交互不是 Harness 外面的装饰</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-4">第二层：Agent Loop 决定下一步，但不等于整个 Harness</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-5">第三层：Context Engine 决定模型这一刻知道什么</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-6">第四层：MCP 让工具可连接，不保证工具被正确使用</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-7">第五层：状态落库不等于任务可恢复</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-8">第六层：Trace 不是漂亮的思维链动画</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-9">第七层：Model Gateway 让模型可替换，但不能假装模型完全等价</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-10">把常见术语放回正确位置</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#sec-11">一个诊断任务怎样穿过 Harness</a></div></li></ol></aside>
+    <article><a class="article-back" href="../blog.html">← 返回 Product Notes</a>
+      <header class="article-header"><p class="article-series">专题与随笔</p><h1>Harness 不是 Agent SDK：一张图理解模型之外的 Agent 工程</h1><p class="article-dek">从 Agent Loop、Context Engine、MCP 到 Trace 与 Eval 的分层地图</p><div class="article-meta">发布 2026-07-17 · 约 14 分钟<span class="article-tags" aria-label="文章标签"><span>agent-harness</span><span>context-engineering</span><span>mcp</span><span>ai-product</span><span>enterprise-agent</span></span></div></header>
+      <div class="article-body"><p>我最早理解 Agent 工程时，脑中大致是这样一张图：</p>
+<div class="highlight"><pre><span></span><code>User
+  ↓
+Agent SDK
+  ├─ Reasoning
+  ├─ Tool Calling
+  ├─ Memory
+  └─ Knowledge / RAG
+  ↓
+Model Provider
+</code></pre></div>
+
+<p>这张图适合入门。它提醒我们，Agent 不只有模型，还需要工具、记忆和知识。</p>
+<p>但当我试图把一个智能诊断 Demo 补成真正可运行的后端时，问题出现了：MCP 应该放在哪里？RAG 和 Memory 是同一件事吗？状态落库是否意味着任务可以恢复？模型选错工具，是模型能力不足，还是工具描述、权限和上下文出了问题？</p>
+<p>仅靠 Agent SDK 这一个盒子，已经解释不了这些问题。</p>
+<p>我后来开始用 <strong>Harness</strong> 重新理解 Agent 工程：模型负责在当前信息下生成和决策，Harness 负责为模型组织任务、上下文、工具、环境、约束、恢复和反馈。</p>
+<div class="callout callout-abstract">
+<p class="callout-title">✦ 本文的核心判断</p>
+<p>Harness 不是某个框架的名称，也不只是一段 Agent Loop。它是包围模型的一组运行时与产品机制，决定模型在每一步看到什么、能做什么、失败后怎样继续，以及团队如何知道它为什么成功或失败。</p>
+</div>
+<h2 id="sec-1">先说明：Harness 还不是边界完全统一的标准术语</h2>
+<p>不同团队会把 Harness 用来指代不同范围：有人主要指 Agent Loop 和工具运行环境，有人还会把上下文、权限、沙箱、Trace、Eval 与反馈系统包含进来。</p>
+<p>因此，与其争论一个唯一正确定义，不如先建立一份可以用于产品设计和故障归因的工作定义：</p>
+<blockquote>
+<p><strong>Agent Harness 是模型之外、产品之内的运行控制系统。它把用户任务转成模型可处理的上下文和动作边界，并管理执行、状态、工具、环境、风险、可观测性和反馈。</strong></p>
+</blockquote>
+<p>这个定义故意强调“产品之内”。Harness 不只是研发基础设施。暂停与恢复怎样展示、工具调用是否需要用户确认、系统何时承认证据不足、失败如何进入下一版，最终都会变成用户体验和产品决策。</p>
+<h2 id="sec-2">从入门图升级到分层图</h2>
+<pre class="mermaid">flowchart TB
+    U[&quot;用户 / 任务&quot;] --&gt; P[&quot;产品交互层&lt;br/&gt;输入、确认、进度、接管&quot;]
+    P --&gt; H
+
+    subgraph H[&quot;Harness Control Plane&quot;]
+        O[&quot;Agent Loop 与编排&lt;br/&gt;Plan / Route / Act / Observe / Recover&quot;]
+        C[&quot;Context Engine&lt;br/&gt;State / Memory / Knowledge / Skill / Projection&quot;]
+        T[&quot;工具与环境运行时&lt;br/&gt;MCP / Sandbox / Permission / Approval / Retry&quot;]
+        E[&quot;可观测与评测&lt;br/&gt;Trace / Attribution / Eval / Feedback&quot;]
+        O &lt;--&gt; C
+        O &lt;--&gt; T
+        O --&gt; E
+        C --&gt; E
+        T --&gt; E
+    end
+
+    H --&gt; G[&quot;Model Gateway&lt;br/&gt;模型选择、路由、预算、降级&quot;]
+    G --&gt; M[&quot;Model Providers&lt;br/&gt;DeepSeek / Claude / OpenAI / 豆包 / Qwen&quot;]
+</pre>
+
+<p>这张图不是某个框架的官方架构，而是我用于理解和讨论 Harness 的产品分层模型。它的价值在于：一个 Agent 出错时，我们可以先判断问题发生在哪一层，而不是笼统地说“模型不行”。</p>
+<h2 id="sec-3">第一层：产品交互不是 Harness 外面的装饰</h2>
+<p>用户通常不会提交一份完整、无歧义的任务。他可能只说：</p>
+<blockquote>
+<p>登录失败了，页面提示网络异常，帮我看一下。</p>
+</blockquote>
+<p>产品交互层要完成的不只是收消息。它还需要：</p>
+<ul>
+<li>补齐环境、时间窗、业务场景和检索关键字。</li>
+<li>展示模型提取的候选，让用户确认或拒绝。</li>
+<li>说明当前正在调用什么能力，哪些步骤被跳过。</li>
+<li>在高风险动作前请求授权。</li>
+<li>允许用户暂停、恢复、纠正和转人工。</li>
+</ul>
+<p>这些动作形成一份可执行的 <code>Task Context</code>。它连接用户界面和 Harness：用户表达的是自然语言，运行时读取的是带来源、状态和约束的任务对象。</p>
+<p>如果没有这一层，Harness 得到的只是一串消息。后续的模型、工具和报告会各自猜测用户真正想做什么。</p>
+<h2 id="sec-4">第二层：Agent Loop 决定下一步，但不等于整个 Harness</h2>
+<p>Agent 最小的执行循环可以写成：</p>
+<div class="highlight"><pre><span></span><code>读取目标与当前状态
+       ↓
+调用模型决定下一步
+       ↓
+执行工具或生成结果
+       ↓
+读取环境反馈并更新状态
+       ↓
+继续、暂停、失败或结束
+</code></pre></div>
+
+<p>OpenAI Agents SDK 的 <code>Runner</code> 就包含类似循环：模型产生最终结果时结束；产生工具调用时执行工具后再次进入模型；发生 handoff 时换到另一个 Agent 继续运行。SDK 同时提供 sessions、guardrails、human-in-the-loop 和 tracing 等原语。<a href="https://openai.github.io/openai-agents-python/agents/">OpenAI Agents SDK：Agents</a></p>
+<p>这说明 SDK 可以承载 Harness 的一部分，但 SDK 不替产品回答以下问题：</p>
+<ul>
+<li>哪些步骤必须固定，哪些可以交给模型动态决定？</li>
+<li>什么证据出现后才允许生成根因？</li>
+<li>一个工具连续失败时应该重试、换工具还是转人工？</li>
+<li>一个任务运行二十分钟后，哪些状态必须能够恢复？</li>
+<li>用户是否有权查看、撤销或批准某个动作？</li>
+</ul>
+<p>这些仍然需要团队在具体场景里定义。</p>
+<p>对企业 Agent，我更倾向于“固定骨架、动态分支”：合规门槛、关键状态和停止条件由 Workflow 固定；搜索、工具选择和局部推理在受控范围内交给模型。Anthropic 也区分了预定义代码路径的 Workflow 与由模型动态决定过程的 Agent，并建议只在确有收益时增加复杂度。<a href="https://www.anthropic.com/engineering/building-effective-agents">Anthropic：Building effective agents</a></p>
+<h2 id="sec-5">第三层：Context Engine 决定模型这一刻知道什么</h2>
+<p>模型不会直接读取数据库、完整代码仓、全部历史对话和所有工具结果。每一次推理前，Harness 都要把可能相关的信息投影成有限的 Model Context。</p>
+<p>这也是 Context Engineering 与 Prompt Engineering 的区别：Prompt 关注指令如何表达，Context Engineering 关注每一轮推理究竟把哪些高价值信息交给模型。Anthropic 将上下文视为有限资源，并提出 just-in-time retrieval、compaction、结构化笔记和子 Agent 隔离等长任务策略。<a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Anthropic：Effective context engineering for AI agents</a></p>
+<p>这一层至少包含五种不同对象：</p>
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>回答的问题</th>
+<th>典型生命周期</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model Context</td>
+<td>下一次模型调用实际看到哪些 Token？</td>
+<td>单次推理</td>
+</tr>
+<tr>
+<td>Working State</td>
+<td>当前任务已经确认了什么、执行到哪里？</td>
+<td>一次 Run / Task</td>
+</tr>
+<tr>
+<td>Session Memory</td>
+<td>这段连续交互中需要保留什么？</td>
+<td>一次会话</td>
+</tr>
+<tr>
+<td>Long-term Memory</td>
+<td>跨会话需要复用哪些偏好、经验或历史？</td>
+<td>用户或 Agent 生命周期</td>
+</tr>
+<tr>
+<td>Knowledge / Resource</td>
+<td>有哪些相对稳定的领域事实和外部材料？</td>
+<td>独立版本与权限周期</td>
+</tr>
+</tbody>
+</table>
+<p>RAG 不是其中一种生命周期。它是一种从 Knowledge / Resource 中检索内容并注入 Model Context 的方法。</p>
+<p>OpenViking 则把自己定位为 Agent 的 Context Database：使用文件系统范式统一组织 memory、resources 和 skills，并通过 L0 摘要、L1 概览、L2 原文进行渐进式加载。<a href="https://docs.openviking.ai/">OpenViking 文档</a>、<a href="https://docs.openviking.ai/en/concepts/03-context-layers">Context Layers</a></p>
+<p>因此，OpenViking 可以成为 Context Engine 的底座，但它不会替 Harness 决定：当前节点允许读取哪些目录、哪些证据可以进入结论、错误记忆如何撤销、工具失败后是否恢复任务。</p>
+<p>一个实用判断是：</p>
+<blockquote>
+<p>Context Database 负责把上下文资产组织得可查、可定位；Context Engine 负责为当前任务选择和组装上下文；Harness 负责让这套上下文参与一条受控、可恢复、可评测的执行过程。</p>
+</blockquote>
+<h2 id="sec-6">第四层：MCP 让工具可连接，不保证工具被正确使用</h2>
+<p>MCP 使用 Host—Client—Server 架构。Host 管理一个或多个 Client，每个 Client 与对应 Server 建立连接；Server 暴露 tools、resources 和 prompts 等能力。官方文档也明确指出，MCP 只负责上下文交换协议，不规定 AI 应用如何使用模型或管理获得的上下文。<a href="https://modelcontextprotocol.io/docs/learn/architecture">MCP Architecture</a></p>
+<p>所以，接通 MCP 只能证明协议链路存在，不能证明 Harness 已经可靠。工具运行时还要处理：</p>
+<ul>
+<li>工具描述是否让模型理解何时调用。</li>
+<li>参数 Schema、默认值和业务语义是否清晰。</li>
+<li>用户和 Agent 是否具备调用权限。</li>
+<li>读操作与写操作是否分级。</li>
+<li>是否需要审批、沙箱或资源限制。</li>
+<li>超时、重试、幂等、熔断和降级如何处理。</li>
+<li>大结果是直接塞给模型，还是保存为 Artifact 后只传摘要与引用。</li>
+<li>Tool Result 如何进入证据池，而不是直接变成结论。</li>
+</ul>
+<p>这也是为什么“我接了十个 MCP Server”不是强 Harness 证据。更重要的问题是：Agent 为什么能看到这十个工具，选错时发生什么，返回一万行日志后怎样避免污染上下文，调用失败后用户能否恢复任务。</p>
+<h2 id="sec-7">第五层：状态落库不等于任务可恢复</h2>
+<p>保存一条聊天记录、工具调用记录或诊断结果，只说明事实可以查询。任务可恢复还要求 Harness 保存执行位置和继续运行所需的状态。</p>
+<p>至少要区分：</p>
+<ul>
+<li><strong>业务记录</strong>：任务、消息、证据、报告。</li>
+<li><strong>执行状态</strong>：当前节点、待执行动作、重试次数、预算、审批状态。</li>
+<li><strong>Checkpoint</strong>：某个一致性边界上的可恢复快照。</li>
+<li><strong>Artifact</strong>：日志文件、截图、代码差异等不适合长期放进上下文的大对象。</li>
+</ul>
+<p>一个任务在等待用户批准时进程重启，如果只能看到历史消息、不能恢复到待批准动作，它就不是可恢复的 Agent Run。</p>
+<p>恢复也不仅是后端能力。产品还要回答：用户回来后看见什么？旧工具结果是否仍然有效？原审批是否过期？恢复后是否可能重复执行有副作用的动作？</p>
+<h2 id="sec-8">第六层：Trace 不是漂亮的思维链动画</h2>
+<p>Trace 的目的不是展示一串看起来聪明的推理步骤，而是帮助团队回答：</p>
+<ul>
+<li>模型收到了什么上下文和工具集合？</li>
+<li>它选择了什么动作，参数从哪里来？</li>
+<li>工具实际返回了什么，是否超时或被拒绝？</li>
+<li>哪些证据进入了最终结论？</li>
+<li>哪个节点改变了任务状态？</li>
+<li>失败属于模型、上下文、工具、环境还是编排？</li>
+</ul>
+<p>OpenAI Agents SDK 的 tracing 会记录模型生成、工具调用、handoff、guardrail 和自定义事件；官方文档同时提醒，Trace 可能包含敏感的模型和工具输入输出，需要单独控制采集范围。<a href="https://openai.github.io/openai-agents-python/tracing/">OpenAI Agents SDK：Tracing</a></p>
+<p>这带来两个产品要求：</p>
+<ol>
+<li>面向用户的执行进度与面向研发的 Trace 不是同一界面。</li>
+<li>可观测性必须服从数据权限和脱敏边界，不能为了调试把全部上下文永久保存。</li>
+</ol>
+<p>Eval 则在 Trace 之上回答版本问题：哪类任务退化了？工具选错还是证据不足？新的上下文策略是否只让答案更长，却没有让任务更可靠？</p>
+<h2 id="sec-9">第七层：Model Gateway 让模型可替换，但不能假装模型完全等价</h2>
+<p>Model Gateway 通常处理模型供应商、路由、配额、重试、缓存、成本和降级。它可以减少产品对单一供应商的绑定。</p>
+<p>但 Harness 不能把不同模型当成完全相同的函数。模型在工具选择、长上下文、结构化输出、错误恢复和风险偏好上可能表现不同。更换模型后，工具描述、上下文长度、停止条件和评测基线都可能需要重新校准。</p>
+<p>所以更准确的关系是：</p>
+<div class="highlight"><pre><span></span><code>模型能力决定可能达到的上限
+Harness 决定模型在具体任务中如何被使用
+产品与评测决定这种使用是否真的创造价值
+</code></pre></div>
+
+<h2 id="sec-10">把常见术语放回正确位置</h2>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th>它主要解决什么</th>
+<th>它不自动解决什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model</td>
+<td>推理、生成、规划和工具选择能力</td>
+<td>业务状态、权限、持久化和产品反馈</td>
+</tr>
+<tr>
+<td>Agent SDK</td>
+<td>Agent、Runner、Tool、Session 等实现原语</td>
+<td>具体业务的 Harness 策略</td>
+</tr>
+<tr>
+<td>Agent Framework</td>
+<td>编排、状态图或多 Agent 开发抽象</td>
+<td>正确的产品边界与质量标准</td>
+</tr>
+<tr>
+<td>MCP</td>
+<td>Host 与外部 Tool/Resource 的标准连接</td>
+<td>工具权限、选择质量和失败恢复</td>
+</tr>
+<tr>
+<td>RAG</td>
+<td>从外部知识中检索相关内容</td>
+<td>会话状态、长期记忆和结论可靠性</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>跨轮次或跨任务保留可复用信息</td>
+<td>当前轮应该把什么全部交给模型</td>
+</tr>
+<tr>
+<td>Context Engine</td>
+<td>组织、检索、压缩和投影上下文</td>
+<td>完整执行、权限、恢复和评测闭环</td>
+</tr>
+<tr>
+<td>Harness</td>
+<td>控制模型如何在任务、上下文、工具和环境中运行</td>
+<td>自动保证模型能力或业务价值</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sec-11">一个诊断任务怎样穿过 Harness</h2>
+<p>下面不是生产结果，而是一条用于检查设计完整性的桌面推演。</p>
+<pre class="mermaid">sequenceDiagram
+    participant U as 用户
+    participant P as 产品交互
+    participant H as Harness
+    participant C as Context Engine
+    participant T as MCP Tool Runtime
+    participant M as Model
+
+    U-&gt;&gt;P: 登录失败，提示网络异常
+    P-&gt;&gt;H: 创建 Task Context
+    H-&gt;&gt;C: 读取场景候选与必要字段
+    C--&gt;&gt;H: 缺少时间窗和环境确认
+    H--&gt;&gt;P: 请求用户补充
+    U-&gt;&gt;P: 确认环境与时间窗
+    H-&gt;&gt;M: 投影当前节点所需上下文
+    M--&gt;&gt;H: 建议先查服务状态和错误日志
+    H-&gt;&gt;T: 调用只读工具
+    T--&gt;&gt;H: 返回结果、来源和调用状态
+    H-&gt;&gt;C: 保存 Artifact 与 Evidence Ref
+    H-&gt;&gt;M: 只传证据摘要和引用
+    M--&gt;&gt;H: 形成候选根因与缺失证据
+    H--&gt;&gt;P: 展示结论强度、证据和下一步
+</pre>
+
+<p>这条推演不证明系统效果，只帮助我们逐项追问：</p>
+<ul>
+<li>用户没有确认时间窗时，Harness 是否会偷偷补值？</li>
+<li>页面写着网络异常，模型是否会过早锚定网络故障？</li>
+<li>工具失败时，结论强度是否下降？</li>
+<li>长日志是否进入 Artifact，而不是全部占用模型上下文？</li>
+<li>最终报告能否引用具体 Evidence ID？</li>
+</ul>
+<p>如果这些问题没有答案，系统即使能跑，也还没有形成清晰的 Harness 产品设计。</p>
+</div></div>
+    </article>
+  </div></div></main>
+  <a class="note-companion" href="../light-world.html" aria-label="去光的阅读室，认识小光" title="小光在这里陪你阅读"></a>
+  <script>
+    document.querySelectorAll('.article-toc-toggle').forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true'
+        const children = document.getElementById(toggle.getAttribute('aria-controls'))
+        toggle.setAttribute('aria-expanded', String(!expanded))
+        toggle.setAttribute('aria-label', (expanded ? '展开 ' : '折叠 ') + toggle.closest('.article-toc-item').querySelector('.article-toc-link').textContent)
+        children.hidden = expanded
+      })
+    })
+  </script>
+</body></html>
