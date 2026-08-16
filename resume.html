@@ -40,15 +40,14 @@
   }
 
   header {
-    display: grid;
-    grid-template-columns: 25mm 1fr 25mm;
-    gap: 10px;
-    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding-top: 3mm;
     padding-bottom: 8px;
     border-bottom: 1.5px solid var(--ink);
   }
 
-  .identity { text-align: center; }
+  .identity { width: 100%; text-align: center; }
   h1 { margin: 0 0 4px; font-size: 27px; line-height: 1; }
   .target,
   strong { color: var(--dark); font-weight: 760; }
@@ -57,15 +56,6 @@
   .meta,
   .time { color: #778294; font-size: 9pt; line-height: 1.22; }
   .contact { margin-top: 5px; }
-
-  .photo {
-    width: 26mm;
-    height: 31mm;
-    object-fit: cover;
-    object-position: center 32%;
-    border: 1px solid #d7dde6;
-    border-radius: 4px;
-  }
 
   .back-home {
     position: fixed;
@@ -197,8 +187,6 @@
 <main id="page" style="padding: 12.7mm;">
 <div id="content">
 <header style="border-bottom: 0px;">
-<div>
-</div>
 <div class="identity">
 <h1 style="font-size: 20pt;">王宇轩</h1>
 <div class="target" style="font-size: 11.5pt;">AI 产品经理｜智能体产品与复杂场景产品化</div>
@@ -206,7 +194,6 @@
 <span>邮箱：wangyx9621@163.com</span>
 </div>
 </div>
-<img class="photo" src="./assets/resume-photo.jpg" alt="王宇轩证件照">
 </header>
 <section>
 <div class="section-heading">
