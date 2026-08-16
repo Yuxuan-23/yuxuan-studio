@@ -33,7 +33,7 @@ img { display: block; max-width: 100%; }
 .header-inner { width: min(var(--content), calc(100% - 28px)); height: 100%; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; }
 .brand { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
 .brand i { margin-left: 4px; color: #68746e; font-size: 10px; font-style: normal; letter-spacing: 0.08em; }
-.brand-flower { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; color: #f7faf8; background: var(--ink); }
+.brand-mark { flex: none; width: 38px; height: 38px; object-fit: contain; }
 .site-nav { display: flex; gap: clamp(24px, 3vw, 44px); color: #425049; font-size: 13px; }
 .site-nav a, .nav-cta, .button, .explore-card { transition: opacity 180ms ease, transform 180ms ease, box-shadow 180ms ease; }
 .site-nav a:hover { opacity: 0.55; }
