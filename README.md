@@ -8,6 +8,8 @@
 
 - `index.html`：个人主页、精选项目、产品方法与联系方式。
 - `explore.html`：四座岛屿组成的探索世界，介绍 AI 产品、复杂系统、产品方法与创作实践。
+- `blog.html`：Product Notes 目录页。
+- `notes/`：站点文章的唯一维护目录。
 
 ## 技术栈
 
@@ -37,6 +39,8 @@ npm run preview
 .
 ├── index.html          # 作品集首页
 ├── explore.html        # 探索世界页面
+├── blog.html           # Product Notes 目录
+├── notes/              # 文章源文件，同时作为 Vite 页面入口
 ├── styles.css          # 全站样式与响应式布局
 ├── assets/             # 图片、插画与图标资源
 ├── design-archive/     # 历史设计探索稿，仅作归档
@@ -57,6 +61,8 @@ npm run build
 ## 维护说明
 
 - 修改页面文案或结构时，优先保持首页与探索页之间的导航锚点一致。
+- 博客文章直接在 `notes/` 中维护；`scripts/build-notes.mjs` 仅保留为旧版文章导入工具，不参与日常构建。
+- `../site/blog/` 是迁移前的历史目录，不再作为文章或图片的真源，也不应继续写入。
 - 新增图片请放入 `assets/`，并为内容图片提供有意义的 `alt` 文本；纯装饰图片使用空 `alt`。
 - `design-archive/` 用于保留设计迭代，不参与主站入口。
 

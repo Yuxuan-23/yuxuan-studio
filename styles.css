@@ -595,7 +595,7 @@ a:focus-visible,.button:focus-visible { outline:3px solid rgba(237,90,45,.48);ou
 .note-number, .note-meta { color:var(--muted); font-family:var(--sans); font-size:11px; letter-spacing:.04em; }
 .note-number { padding-top:5px; color:var(--orange); }
 .note-copy { min-width:0; }
-.note-tags { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 10px; }
+.note-tags { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 0; }
 .note-tags span { display:inline-flex; align-items:center; min-height:23px; padding:3px 7px; border:1px solid rgba(18,57,129,.15); border-radius:999px; color:#5b6d86; background:rgba(238,245,255,.64); font:600 9px/1.2 var(--sans); letter-spacing:.02em; }
 .note-title { display:block; font-family:var(--cjk-display); font-size:21px; font-weight:700; line-height:1.45; transition:color 180ms ease; }
 .note-meta { padding-top:7px; white-space:nowrap; }
@@ -1720,67 +1720,52 @@ a:focus-visible,.button:focus-visible { outline:3px solid rgba(237,90,45,.48);ou
   .notes-home-list a,.notes-home-list a + a { min-height:250px;padding:25px 23px 23px;border-radius:24px; }
 }
 
-/* Product Notes: one editorial system from the homepage into the reading room. */
+/* Product Notes shares the reading room's welcome treatment; the words set it apart. */
 .notes-page {
   --notes-blue: #123981;
   --notes-blue-soft: #5e78a7;
   --notes-line: rgba(18,57,129,.16);
 }
-.notes-main { padding-top: 128px; }
+.notes-main { padding-top: 72px; padding-bottom:24px; }
 .notes-lead {
-  min-height: 0;
-  padding: clamp(54px, 7vw, 96px) clamp(28px, 6.2vw, 88px) clamp(48px, 6vw, 76px);
-  border: 1px solid var(--notes-line);
-  border-radius: 0 42px 42px 42px;
-  background:
-    radial-gradient(circle at 87% 17%, rgba(157,190,255,.65) 0 4%, transparent 4.6%),
-    radial-gradient(circle at 88% 19%, rgba(157,190,255,.16) 0 18%, transparent 18.5%),
-    linear-gradient(135deg, #eaf2ff 0%, #fbfaf6 56%, #f4f2ec 100%);
-  box-shadow: 0 18px 54px rgba(38,72,121,.06);
+  min-height: 145px;
+  padding: 20px 30px;
+  border: 1px solid rgba(18,57,129,.1);
+  border-radius: 32px;
+  background: linear-gradient(120deg,#f8f2e7 0%,#fffdfa 52%,#e5f1ff 100%);
+  box-shadow: 0 20px 50px rgba(38,72,121,.07);
 }
 .notes-lead::before {
-  right: -90px;
-  bottom: -180px;
-  width: 470px;
-  height: 470px;
-  background: radial-gradient(circle, rgba(201,220,255,.74) 0 9%, rgba(201,220,255,.2) 30%, transparent 69%);
+  right: -40px;
+  bottom: -100px;
+  width: 330px;
+  height: 330px;
+  background: radial-gradient(circle,#ffe38e 0 10%,rgba(255,216,100,.3) 34%,transparent 70%);
 }
 .notes-lead::after {
-  opacity: .2;
-  background-image: linear-gradient(90deg, rgba(18,57,129,.1) 1px, transparent 1px), linear-gradient(rgba(18,57,129,.1) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: linear-gradient(120deg, transparent 38%, black 88%);
+  content: none;
 }
-.notes-lead > .eyebrow { color: var(--notes-blue); letter-spacing: .16em; }
+.notes-lead > .eyebrow { color: var(--orange); letter-spacing: normal; }
 .notes-lead h1 {
-  max-width: 900px;
-  margin: 22px 0 10px;
-  color: var(--notes-blue);
+  max-width: 600px;
+  margin: 8px 0;
+  color: var(--blue-ink);
   font-family: var(--serif);
-  font-size: clamp(72px, 11vw, 150px);
-  line-height: .83;
-  letter-spacing: -.085em;
-  text-wrap: balance;
+  font-size: clamp(38px,4vw,48px);
+  line-height: .95;
+  letter-spacing: -.065em;
 }
-.notes-lead .notes-lead-cn {
-  margin: 0 0 25px;
-  color: var(--notes-blue-soft);
-  font-family: var(--cjk-display);
-  font-size: clamp(25px, 3vw, 42px);
-  font-weight: 600;
-  letter-spacing: -.05em;
-  line-height: 1.1;
-}
-.notes-lead p:not(.eyebrow):not(.notes-lead-cn) {
-  max-width: 560px;
-  color: #52647d;
-  font-size: clamp(15px, 1.25vw, 18px);
-  line-height: 1.8;
+.notes-lead p:not(.eyebrow) {
+  max-width: 510px;
+  margin: 0;
+  color: #677582;
+  font-size: 15px;
+  line-height: 1.5;
 }
 .notes-index {
   grid-template-columns: 240px minmax(0, 1fr);
-  gap: clamp(38px, 7vw, 110px);
-  padding-top: 64px;
+  gap: clamp(34px, 5vw, 72px);
+  padding-top: 20px;
 }
 .notes-directory {
   top: 96px;
@@ -1826,58 +1811,62 @@ a:focus-visible,.button:focus-visible { outline:3px solid rgba(237,90,45,.48);ou
 .notes-filter-button:focus-visible { outline-color: var(--notes-blue); }
 .notes-filter-button.is-active { border-color: rgba(18,57,129,.38); color: var(--notes-blue); background: #eaf2ff; }
 .notes-filter-status { color: #748196; }
-.notes-section { padding-bottom: 58px; }
-.notes-section + .notes-section { padding-top: 58px; border-top-color: var(--notes-line); }
-.notes-section-heading { align-items: start; margin-bottom: 10px; }
-.notes-section-heading > div { min-width: 0; }
+.notes-section { padding-bottom: 12px; }
+.notes-section + .notes-section { padding-top: 12px; border-top-color: var(--notes-line); }
+.notes-section-heading { align-items: baseline; margin-bottom: 4px; }
+.notes-section-heading > div { display:flex; min-width:0; align-items:baseline; gap:10px; flex-wrap:wrap; }
 .notes-section-kicker {
-  display: block;
-  margin-bottom: 12px;
+  display: inline-block;
+  margin: 0;
   color: var(--notes-blue-soft);
   font-family: var(--sans);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: .14em;
+  letter-spacing: .1em;
 }
 .notes-section-heading h2 {
   color: #213e70;
-  font-size: clamp(27px, 2.6vw, 38px);
-  line-height: 1.2;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: .04em;
 }
 .notes-section-heading > span { padding-top: 5px; color: var(--notes-blue-soft); }
 .notes-section > p { max-width: 580px; margin: 0 0 20px; color: #68778d; line-height: 1.8; }
 .note-row {
   grid-template-columns: 42px minmax(0,1fr) auto;
   gap: 20px;
-  padding: 25px 15px 25px 0;
+  padding: 4px 15px 4px 0;
   border-bottom-color: rgba(18,57,129,.14);
   transition: background 180ms ease, padding 180ms ease;
 }
 .note-row:hover { padding-left: 12px; background: rgba(232,242,255,.48); }
 .note-row:hover .note-title { color: var(--notes-blue); }
 .note-number { color: var(--notes-blue); }
-.note-title { font-size: 22px; }
+.note-title { font-size: 20px; }
 .note-summary { color: #748196; }
 .note-meta { color: var(--notes-blue-soft); }
 
 @media (max-width:760px) {
-  .notes-main { padding-top: 90px; }
-  .notes-lead { padding: 38px 25px 43px; border-radius: 0 26px 26px 26px; }
-  .notes-lead h1 { margin-top: 18px; font-size: clamp(63px, 17vw, 88px); line-height: .86; }
-  .notes-lead .notes-lead-cn { margin-bottom: 20px; font-size: 28px; }
-  .notes-lead p:not(.eyebrow):not(.notes-lead-cn) { font-size: 15px; line-height: 1.75; }
-  .notes-index { gap: 29px; padding-top: 36px; }
+  .notes-main { padding-top: 76px; }
+  .notes-lead { min-height: 180px; padding: 24px 22px 26px; border-radius: 25px; }
+  .notes-lead h1 { margin-top: 8px; font-size: clamp(40px,11vw,52px); }
+  .notes-lead p:not(.eyebrow) { font-size: 15px; line-height: 1.75; }
+  .notes-index { grid-template-columns: 1fr; gap: 18px; padding-top: 20px; }
   .notes-directory { padding: 15px 0; border-top: 1px solid var(--notes-line); border-right: 0; border-bottom: 1px solid var(--notes-line); border-left: 0; }
   .notes-directory strong { font-size: 19px; }
   .notes-directory a { display: inline-block; margin-top: 20px; margin-right: 15px; padding-top: 0; border-top: 0; }
   .notes-directory a + a { margin-top: 20px; }
-  .notes-section { padding-bottom: 40px; }
-  .notes-section + .notes-section { padding-top: 40px; }
-  .notes-section-heading { gap: 9px; }
-  .notes-section-heading h2 { font-size: 27px; }
-  .notes-section-kicker { margin-bottom: 9px; font-size: 9px; }
+  .notes-filter-options { flex-wrap:nowrap; overflow-x:auto; padding-bottom:4px; scrollbar-width:thin; }
+  .notes-filter-button { flex:0 0 auto; }
+  .notes-section { padding-bottom: 14px; }
+  .notes-section + .notes-section { padding-top: 14px; }
+  .notes-section-heading { gap: 7px; }
+  .notes-section-heading h2 { font-size: 13px; }
+  .notes-section-kicker { font-size: 10px; }
   .notes-section-heading > span { white-space: nowrap; font-size: 10px; }
-  .note-row { grid-template-columns: 30px minmax(0,1fr); gap: 10px; padding-right: 0; }
+  .note-row { grid-template-columns: 30px minmax(0,1fr); gap: 10px; padding: 10px 0; }
   .note-row:hover { padding-left: 0; background: transparent; }
   .note-title { font-size: 19px; }
   .note-meta { grid-column: 2; padding-top: 0; }

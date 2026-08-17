@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/build-notes.mjs && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
