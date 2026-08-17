@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f4f2ec" /><title>Agent 的执行轨迹，应该让用户看见多少？｜宇轩 Yuxuan</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/brand/favicon-compact-32-v2.png" /><link rel="icon" type="image/png" sizes="64x64" href="../assets/brand/favicon-compact-64-v2.png" /><link rel="apple-touch-icon" sizes="180x180" href="../assets/brand/apple-touch-icon-compact-v2.png" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>.trace-product-note .article-body .mermaid svg{min-width:0}</style>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs'
+    mermaid.initialize({ startOnLoad: true, theme: 'base', securityLevel: 'loose', themeVariables: { fontFamily: 'ui-sans-serif, system-ui, sans-serif', primaryColor: '#eef5ff', primaryTextColor: '#18355f', primaryBorderColor: '#9eb7d8', lineColor: '#6583a9', secondaryColor: '#fff5e8', tertiaryColor: '#f4f2ec' } })
+  </script>
+</head><body class="notes-page trace-product-note">
+  <a class="skip-link" href="#article">跳到主要内容</a>
+  <header class="site-header"><div class="header-inner">
+    <a class="brand" href="../index.html#top" aria-label="返回宇轩 Yuxuan 首页"><img class="brand-mark" src="../assets/brand/favicon-master-compact-v2.png" alt="" width="38" height="38" decoding="async" /><span>宇轩 <i>YUXUAN</i></span></a>
+    <nav class="site-nav" aria-label="主导航"><a href="../index.html#work">项目</a><a href="../index.html#bring">能力</a><a href="../blog.html" aria-current="page">笔记</a><a href="../index.html#about">关于</a></nav>
+  </div></header>
+  <main class="notes-main" id="article"><div class="notes-wrap"><div class="article-shell">
+    <aside class="article-toc" aria-label="本章目录"><small>本章目录 · CONTENTS</small><ol class="article-toc-list article-toc-root">
+      <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#why-stop">为什么把 Trace 放进主界面</a></div></li>
+      <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#comparison">四种产品在让用户判断什么</a></div></li>
+      <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#not-log">Trace 不是一条更长的日志</a></div></li>
+      <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#session-event">为什么这张 Trace 能成为产品</a></div></li>
+      <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#plugin-trace">插件化与 Trace 为什么要一起看</a></div></li>
+      <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#translation">普通用户不该直接读 Trace</a></div></li>
+      <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#pm-judgment">执行轨迹应该展示到哪一层</a></div></li>
+    </ol></aside>
+    <article><a class="article-back" href="../blog.html">← 返回 Product Notes</a>
+      <header class="article-header"><p class="article-series">AGENT TRACE VISIBILITY · 本地验收稿</p><h1>Agent 的执行轨迹，应该让用户看见多少？</h1><p class="article-dek">从 DeepSeek Harness 把 Trace 放进主界面说起</p><div class="article-meta">本地验收稿 2026-08-18 · 约 14 分钟<span class="article-tags" aria-label="文章标签"><span>deepseek-harness</span><span>agent-ux</span><span>product-judgment</span><span>agent-observability</span></span></div></header>
+      <div class="article-body">
+<p><strong>DeepSeek Harness 把原本常驻后台的 Agent Trace，做成了产品主界面的一部分。</strong></p>
+
+<p>在 Trajectory 页面里，一轮模型看到了什么、调用了哪个工具、工具返回了什么、子 Agent 如何展开、Token 和时间花在哪里，都可以沿着轨迹继续检查。</p>
+
+<p>Trace 本身并不新鲜。真正值得研究的是：DeepSeek 为什么要把它从故障排查时才打开的后台面板，提到用户日常使用的主界面？它主要服务谁？这种可见性又应该被其他 Agent 产品复制到什么程度？</p>
+
+<div class="callout callout-abstract">
+<p class="callout-title">这篇文章真正想回答的问题</p>
+<p>Agent 的执行轨迹不是展示得越多越好。产品需要先判断：谁要看、他要据此判断什么、看到之后能采取什么动作。</p>
+</div>
+
+<p>这篇文章从 DeepSeek Harness 出发，先与 Work、Codex 和 Claude Code 对比，再解释一条 Trace 为什么能够成为产品对象，以及普通用户究竟应该看到哪一层。</p>
+
+<h2 id="why-stop">一、DeepSeek 为什么把 Trace 放进主界面</h2>
+
+<p>答案首先与目标用户有关。DeepSeek Harness 不是主要面向普通任务用户的办公 Agent，而是供 Agent 开发者观察和组装 Runtime 的 Harness。对这类用户来说，运行过程不是附属信息，本身就是工作对象。</p>
+
+<p>他们需要判断的不是“报告写完了吗”，而是：</p>
+
+<ul>
+<li>这次判断使用了哪段上下文；</li>
+<li>模型、工具与子 Agent 如何衔接；</li>
+<li>失败发生在模型、工具、插件还是调度层；</li>
+<li>替换某个组件后，运行路径、成本和结果改变了什么。</li>
+</ul>
+
+<p>因此，把 Trace 放进主界面并不是为了制造“透明感”，而是为了让开发、调试、归因和实验比较进入同一个工作台。尤其在“一切皆插件”的架构下，组件越容易替换，开发者越需要及时看见替换后的影响。</p>
+
+<blockquote><p>DeepSeek Harness 展示完整 Trace，是因为它的目标用户需要对 Runtime 负责。</p></blockquote>
+
+<h2 id="comparison">二、Work、Codex、Claude Code 与 DSH，其实在让用户判断不同的东西</h2>
+
+<p>把这四款产品放在一起，差异并不只是“谁展示得更详细”，而是它们分别选择了不同的用户判断对象。</p>
+
+<table>
+<thead><tr><th>产品</th><th>默认放到前面的对象</th><th>用户最后要作出的判断</th></tr></thead>
+<tbody>
+<tr><td>ChatGPT Work</td><td>来源、文件、成果预览、批注</td><td>这份成果能不能使用？</td></tr>
+<tr><td>Codex</td><td>文件变更、diff、测试、分支与 Git 状态</td><td>这次工程变更能不能接受？</td></tr>
+<tr><td>Claude Code</td><td>计划、权限、修改对比、检查点与回退</td><td>可以继续吗？走错后怎样恢复？</td></tr>
+<tr><td>DeepSeek Harness</td><td>Session、工具调用、Trajectory 与插件事件</td><td>为什么这样运行？应该替换或修正哪一层？</td></tr>
+</tbody>
+</table>
+
+<p>Work 面向的是一项可交付的工作，所以过程最终要靠近文件和成果；Codex 面向代码仓库，所以 Git 变更是最可信的共同语言；Claude Code 强调一个会真实行动的编码搭档，因此授权与恢复被前置；DeepSeek Harness 面向 Harness 开发者，Runtime 本身就是需要观察和组装的产品对象。</p>
+
+<p>这也解释了为什么不能直接得出“DSH 的可见性更好”。完整 Trace 对 Harness 开发者是工作台，对只想验收结果的用户却可能是噪音。可见性的标准不是信息量，而是它是否贴近用户真正需要承担的判断。</p>
+
+<h2 id="not-log">三、Trace 不是一条更长的日志</h2>
+
+<p>讨论 Agent 可见性时，进度、活动记录和 Trace 经常被混在一起。它们看起来都在展示过程，但服务的判断不同。</p>
+
+<table>
+<thead><tr><th>界面对象</th><th>回答的问题</th><th>典型表达</th></tr></thead>
+<tbody>
+<tr><td>任务进度</td><td>现在做到哪里？</td><td>正在检索资料 · 已完成 3/5</td></tr>
+<tr><td>活动记录</td><td>刚才做了什么？</td><td>读取文件 · 调用搜索 · 更新报告</td></tr>
+<tr><td>运行轨迹</td><td>为什么沿这条路径运行？</td><td>上下文 → 模型请求 → 工具调用 → 结果 → 下一步</td></tr>
+</tbody>
+</table>
+
+<p>日志可以只是按时间堆叠的文本；真正可用的 Trace 必须保留关系。一次工具调用要能和它的参数、结果以及后续模型行为对应起来；一轮任务要能区分正常完成、用户取消、等待批准、错误中断或输出截断。</p>
+
+<p>因此，Trajectory 的产品价值不来自“信息很多”，而来自它给运行过程建立了稳定坐标。开发者可以从一轮任务下钻到某个步骤，再定位到某次调用，而不是在一大段日志里猜测前后关系。</p>
+
+<div class="callout callout-note"><p class="callout-title">Trace 不是模型思维链</p><p>这里讨论的是可核验的输入、工具动作、结果、状态变化和使用量，不是要求产品展示模型隐藏的推理过程。运行透明与暴露思维链是两件事。</p></div>
+
+<h2 id="session-event">四、为什么这张 Trace 能成为产品</h2>
+
+<p>如果 Trajectory 只是任务结束后临时拼出的一张报表，它依然只是附加的可观测能力。DeepSeek Harness 更关键的选择，是把一次 Session 定义为持续追加的事件记录。</p>
+
+<p>系统提示、上下文注入、用户消息、模型输出、工具调用与结果、轮次和步骤边界，都先成为同一条会话事件流中的事实。聊天界面、Trajectory、统计、恢复和分叉，再分别从这份记录中读取自己需要的部分。</p>
+
+<pre class="mermaid">flowchart LR
+    E["同一条会话事件流"] --> C["对话视图"]
+    E --> T["运行轨迹"]
+    E --> R["恢复 / 分叉"]
+    E --> V["统计 / 评测"]
+    C --> U1["回答发生了什么"]
+    T --> U2["解释为什么这样运行"]
+    R --> U3["从稳定位置继续"]
+    V --> U4["比较不同运行结果"]</pre>
+
+<h3>第一，Trace 不再是旁路记录，而是会话事实的一个视图</h3>
+
+<p>聊天和轨迹不需要各自维护一套“真相”。当两者来自相同事件序列，用户在聊天里看到的工具结果、在 Trajectory 里检查的调用，以及恢复后继承的历史才有机会保持一致。</p>
+
+<h3>第二，恢复与分叉不再只是复制聊天文本</h3>
+
+<p>系统可以选择一段稳定的历史前缀，从那里恢复执行，或者创建一条新的运行分支。被继承的不只是对话句子，还包括支撑这次运行的上下文、工具结果与状态边界。</p>
+
+<h3>第三，同一事实源可以生成不同语义密度的界面</h3>
+
+<p>开发者看完整工具参数，评测人员看耗时和失败位置，普通用户只看“正在核对两份来源，其中一份暂时不可用”。底层记录不必变成所有人的默认界面，但它为不同翻译提供了基础。</p>
+
+<p>这就是我认为它比“做了一张漂亮的 Trace 表格”更深的地方：<strong>先把运行事实保存成可以重复解释的对象，再决定让谁看见什么。</strong></p>
+
+<h2 id="plugin-trace">五、插件化与 Trace 为什么要一起看</h2>
+
+<p>“一切皆插件”解决的是可替换性：模型、工具、技能、会话、存储、沙箱、Agent Loop、调度乃至 UI 都可以组合或更换。但只做到可替换，还不足以形成一个好用的 Harness。</p>
+
+<p>因为每一次替换都会引入新的问题：换了搜索工具，答案变好究竟来自召回结果还是模型行为？改了 Agent Loop，成本为什么上升？新增子 Agent 后，延迟发生在哪一段？</p>
+
+<p>Trace 补上的是可解释的反馈面。两者放在一起，才形成完整的开发循环：</p>
+
+<pre class="mermaid">flowchart TB
+    P["替换插件或运行策略"] --> X["执行真实任务"]
+    X --> T["检查 Trajectory"]
+    T --> A["定位差异与失败"]
+    A --> E["比较 / 评测 / 再设计"]
+    E -. 进入下一轮 .-> P</pre>
+
+<p>对开发者而言，这个组合至少带来四种价值：</p>
+
+<ul>
+<li><strong>问题归因：</strong>区分问题来自模型、上下文、工具、插件还是调度。</li>
+<li><strong>实验比较：</strong>替换组件后，不只比较最终答案，还比较中间路径、成本和失败位置。</li>
+<li><strong>会话连续性：</strong>基于同一份历史恢复、分叉和回放，而不是重新猜测现场。</li>
+<li><strong>界面复用：</strong>从同一事件事实生成聊天、轨迹、评测和审计视图。</li>
+</ul>
+
+<blockquote><p>插件化告诉开发者“哪里可以换”，Trajectory 告诉开发者“换完以后发生了什么”。</p></blockquote>
+
+<h2 id="translation">六、普通用户不该直接读 Trace，但产品不能没有 Trace</h2>
+
+<p>这也是 DSH 最容易被误学的地方。看到 Trajectory 很惊喜，不代表企业 Agent 应该把 Tool Call、Token 和完整上下文全部推给业务用户。</p>
+
+<p>更合理的做法，是让同一个运行事实按角色被翻译成不同界面。假设一个诊断 Agent 调用了两份日志，其中一份读取失败：</p>
+
+<table>
+<thead><tr><th>面向谁</th><th>界面怎样表达同一件事</th><th>支持的动作</th></tr></thead>
+<tbody>
+<tr><td>任务使用者</td><td>正在核对两份日志；一份暂时不可用，当前结论置信度降低</td><td>补充资料或接受降级结论</td></tr>
+<tr><td>专业复核者</td><td>来源 A 支持“网络超时”；来源 B 读取失败，尚不能排除应用侧异常</td><td>检查证据、修改判断</td></tr>
+<tr><td>开发与审计</td><td>第 2 轮第 3 步，日志工具返回权限错误；重试 1 次；后续分支使用降级策略</td><td>排障、回放、比较版本</td></tr>
+</tbody>
+</table>
+
+<p>这三层分别是任务层、证据层和运行层。它们不是三份互相矛盾的记录，而是同一事实源面向不同责任人的投影。</p>
+
+<p>对光溯这类复杂任务产品，我不会照搬 DSH 的 Trajectory 主界面。但我会借鉴它的底层逻辑：计划变化、证据获取、工具失败、人工确认和最终结论都应留下结构化记录；普通用户默认看任务语言，专业用户展开证据，审计与排障人员再进入完整 Trace。</p>
+
+<h2 id="pm-judgment">七、Agent 的执行轨迹，应该展示到哪一层</h2>
+
+<p>看完 DeepSeek Harness，我认为 Agent 可见性的产品决策至少有四个判断维度。</p>
+
+<ol>
+<li><strong>用户负责什么对象？</strong>负责成果、代码变更、执行授权，还是 Runtime 本身？</li>
+<li><strong>操作风险有多高？</strong>越不可逆，证据、权限与恢复入口越应该前置。</li>
+<li><strong>信息能否改变下一步决定？</strong>不能帮助判断的信息，更适合留在运行层。</li>
+<li><strong>系统状态是否已经被翻译？</strong>“工具调用失败”是系统语言；“缺少一份关键证据，结论暂时降级”才是任务语言。</li>
+</ol>
+
+<p>产品验证也不应只看 Trace 展开率。更有价值的指标是：开发者定位失败需要多久，不同插件或策略能否被稳定比较，Session 恢复后是否保持上下文一致；对普通用户，则看他是否减少追问“现在在做什么”、能否在错误扩大前纠偏、是否理解任务为什么仍未完成。</p>
+
+<div class="callout callout-note"><p class="callout-title">仍然存在的边界</p><p>DeepSeek Harness 目前处于开发者预览阶段。完整 Trace 还涉及存储增长、事件结构演进、敏感输入与工具参数的权限、脱敏和保留周期。可观察也不等于已经可评测：有了轨迹，只是获得了归因素材，最终仍需要任务标准与 Eval。</p></div>
+
+<h2 id="conclusion">结语：DeepSeek 真正产品化的是 Agent Runtime</h2>
+
+<p>回到最初让我停下来的那张 Trajectory。</p>
+
+<p>它的意义不是让普通用户第一次看见 Agent 调用了什么工具，也不是证明 DeepSeek Harness 的界面比其他产品更透明。它真正向前推进的一步，是把 Runtime 从藏在日志和开发工具里的后台机制，变成了可以检查、归因、比较、恢复和继续设计的产品对象。</p>
+
+<p>“一切皆插件”决定了系统哪些部分可以被替换；Session Event 保存实际发生过什么；Trajectory 让变化可以被看见；恢复与分叉则让这份历史还能继续参与下一次运行。</p>
+
+<blockquote><p>Trace 最有价值的时刻，不是它展示了多少细节，而是它开始支撑用户理解一次运行、定位一次失败，并决定下一步该改哪里。</p></blockquote>
+
+<h2 id="sources">事实来源与延伸阅读</h2>
+
+<ul>
+<li><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/README.zh.md">DeepSeek Harness 官方说明</a></li>
+<li><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-trajectory/README.zh.md">DeepSeek Harness Trajectory UI 说明</a></li>
+<li><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/subsystems/session.zh.md">DeepSeek Harness Session 事件模型</a></li>
+<li><a href="https://learn.chatgpt.com/docs/get-started-with-work">OpenAI：ChatGPT Work</a></li>
+<li><a href="https://learn.chatgpt.com/docs/code-review">OpenAI：Codex 代码审阅</a></li>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/ide-integrations">Anthropic：Claude Code 计划与权限</a></li>
+<li><a href="https://docs.anthropic.com/en/docs/claude-code/checkpointing">Anthropic：Claude Code 检查点与回退</a></li>
+<li><a href="deepseek-harness-session-event-architecture.html">站内技术延伸：DeepSeek Harness 的事件流</a></li>
+</ul>
+      </div>
+    </article>
+  </div></div></main>
+  <a class="note-companion" href="../light-world.html" aria-label="去光的阅读室，认识小光" title="小光在这里陪你阅读"></a>
+</body></html>

@@ -1,6 +1,9 @@
 import { readFile, mkdir, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
+// 历史文章单向导入工具，不再由 npm run build 调用。
+// 站点文章以 yuxuan-studio/notes 内的 HTML 为唯一维护源。
+
 const studioRoot = process.cwd()
 const legacyRoot = resolve(studioRoot, '../site/blog/posts')
 const outputRoot = resolve(studioRoot, 'notes')
