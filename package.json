@@ -1,13 +1,3 @@
-{
-  "name": "yuxuan-studio",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "vite",
-    "build": "node scripts/build-notes.mjs && vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "vite": "8.0.13"
+YªçŠx-®éÜj×¢ëiºÚ+Š§j[h‘éÜ¢éíïdèµ©hºÚn¶X§zÍ^Âˆ›˜[YHˆ]zÚÚ$z{-®éÜj×"8.0.13"
   }
 }
