@@ -38,16 +38,18 @@
             <div class="notes-filter" aria-label="按标签筛选文章">
               <small>FILTER BY TOPIC · 按主题</small>
               <div class="notes-filter-options">
-                <button type="button" class="notes-filter-button is-active" data-filter="all" aria-pressed="true">全部文章 <span>2</span></button>
+                <button type="button" class="notes-filter-button is-active" data-filter="all" aria-pressed="true">全部文章 <span>3</span></button>
                 <button type="button" class="notes-filter-button" data-filter="ai-product" aria-pressed="false">ai-product</button>
                 <button type="button" class="notes-filter-button" data-filter="enterprise-agent" aria-pressed="false">enterprise-agent</button>
                 <button type="button" class="notes-filter-button" data-filter="context-engineering" aria-pressed="false">context-engineering</button>
                 <button type="button" class="notes-filter-button" data-filter="agent-harness" aria-pressed="false">agent-harness</button>
+                <button type="button" class="notes-filter-button" data-filter="agent-observability" aria-pressed="false">agent-observability</button>
+                <button type="button" class="notes-filter-button" data-filter="event-sourcing" aria-pressed="false">event-sourcing</button>
                 <button type="button" class="notes-filter-button" data-filter="mcp" aria-pressed="false">mcp</button>
                 <button type="button" class="notes-filter-button" data-filter="human-in-the-loop" aria-pressed="false">human-in-the-loop</button>
                 <button type="button" class="notes-filter-button" data-filter="product-design-notes" aria-pressed="false">product-design-notes</button>
               </div>
-              <p class="notes-filter-status" aria-live="polite">显示全部 2 篇笔记</p>
+              <p class="notes-filter-status" aria-live="polite">显示全部 3 篇笔记</p>
             </div>
           </aside>
           <div>
@@ -57,9 +59,10 @@
               <a class="note-row" data-note data-tags="enterprise-agent ai-product context-engineering human-in-the-loop product-design-notes" href="./notes/executable-context-for-enterprise-agents.html"><span class="note-number">01</span><span class="note-copy"><span class="note-tags" aria-label="文章标签"><span>enterprise-agent</span><span>ai-product</span><span>context-engineering</span><span>human-in-the-loop</span><span>product-design-notes</span></span><span class="note-title">从自然语言到 Context Contract：企业 Agent 的产品建模</span></span><span class="note-meta">2026.07 · 9 min</span></a>
             </section>
             <section class="notes-section" id="system">
-              <div class="notes-section-heading"><div><span class="notes-section-kicker">02 / SYSTEMS &amp; RELIABILITY</span><h2>把 Agent 放回完整的系统里</h2></div><span>01 NOTE</span></div>
+              <div class="notes-section-heading"><div><span class="notes-section-kicker">02 / SYSTEMS &amp; RELIABILITY</span><h2>把 Agent 放回完整的系统里</h2></div><span>02 NOTES</span></div>
               <p>模型只是能力的一层；工具、上下文、状态、观测与评测共同决定产品能否稳定地工作。</p>
               <a class="note-row" data-note data-tags="agent-harness context-engineering mcp ai-product enterprise-agent" href="./notes/agent-harness-engineering-map.html"><span class="note-number">01</span><span class="note-copy"><span class="note-tags" aria-label="文章标签"><span>agent-harness</span><span>context-engineering</span><span>mcp</span><span>ai-product</span><span>enterprise-agent</span></span><span class="note-title">Harness 不是 Agent SDK：一张图理解模型之外的 Agent 工程</span></span><span class="note-meta">2026.07 · 14 min</span></a>
+              <a class="note-row" data-note data-tags="deepseek-harness agent-observability event-sourcing ai-product" href="./notes/deepseek-harness-session-event-architecture.html"><span class="note-number">02</span><span class="note-copy"><span class="note-tags" aria-label="文章标签"><span>deepseek-harness</span><span>agent-observability</span><span>event-sourcing</span><span>ai-product</span></span><span class="note-title">DeepSeek Harness 的事件流：Agent 的「工作录像」是怎样生成的</span></span><span class="note-meta">2026.08 · 18 min</span></a>
             </section>
           </div>
         </div>
@@ -125,7 +128,7 @@
         filterButtons.forEach((button) => button.addEventListener('click', () => applyFilter(button.dataset.filter)));
       })();
 
-      (function () { const post = new URLSearchParams(location.search).get('post'); const routes = { context: './notes/executable-context-for-enterprise-agents.html', harness: './notes/agent-harness-engineering-map.html' }; if (post && routes[post]) location.replace(routes[post]); })();
+      (function () { const post = new URLSearchParams(location.search).get('post'); const routes = { context: './notes/executable-context-for-enterprise-agents.html', harness: './notes/agent-harness-engineering-map.html', dsh: './notes/deepseek-harness-session-event-architecture.html' }; if (post && routes[post]) location.replace(routes[post]); })();
     </script>
   </body>
 </html>

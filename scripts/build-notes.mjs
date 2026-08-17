@@ -8,6 +8,7 @@ const outputRoot = resolve(studioRoot, 'notes')
 const posts = [
   { slug: 'executable-context-for-enterprise-agents', label: '上下文工程' },
   { slug: 'agent-harness-engineering-map', label: '专题与随笔' },
+  { slug: 'deepseek-harness-session-event-architecture', label: '运行时与可观测' },
 ]
 
 const text = (html) => html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
