@@ -14,6 +14,7 @@ export default defineConfig({
         resume: resolve(__dirname, 'resume.html'),
         noteContext: resolve(__dirname, 'notes/executable-context-for-enterprise-agents.html'),
         noteHarness: resolve(__dirname, 'notes/agent-harness-engineering-map.html'),
+        noteDeepSeekHarness: resolve(__dirname, 'notes/deepseek-harness-session-event-architecture.html'),
       },
     },
   },

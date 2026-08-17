@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f4f2ec" /><title>DeepSeek Harness 的事件流：Agent 的「工作录像」是怎样生成的｜宇轩 Yuxuan</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/brand/favicon-compact-32-v2.png" /><link rel="icon" type="image/png" sizes="64x64" href="../assets/brand/favicon-compact-64-v2.png" /><link rel="apple-touch-icon" sizes="180x180" href="../assets/brand/apple-touch-icon-compact-v2.png" />
+  <link rel="stylesheet" href="../styles.css" />
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs'
+    mermaid.initialize({ startOnLoad: true, theme: 'base', securityLevel: 'loose', themeVariables: { fontFamily: 'ui-sans-serif, system-ui, sans-serif', primaryColor: '#eef5ff', primaryTextColor: '#18355f', primaryBorderColor: '#9eb7d8', lineColor: '#6583a9', secondaryColor: '#fff5e8', tertiaryColor: '#f4f2ec' } })
+  </script>
+</head><body class="notes-page">
+  <a class="skip-link" href="#article">跳到主要内容</a>
+  <header class="site-header"><div class="header-inner">
+    <a class="brand" href="../index.html#top" aria-label="返回宇轩 Yuxuan 首页"><img class="brand-mark" src="../assets/brand/favicon-master-compact-v2.png" alt="" width="38" height="38" decoding="async" /><span>宇轩 <i>YUXUAN</i></span></a>
+    <nav class="site-nav" aria-label="主导航"><a href="../index.html#work">项目</a><a href="../index.html#bring">能力</a><a href="../blog.html" aria-current="page">笔记</a><a href="../index.html#about">关于</a></nav>
+  </div></header>
+  <main class="notes-main" id="article"><div class="notes-wrap"><div class="article-shell">
+    <aside class="article-toc" aria-label="本章目录"><small>本章目录 · CONTENTS</small><ol class="article-toc-list article-toc-root"><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#section-1">一、会话事件日志：不是聊天记录，而是唯一真源</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#section-2">二、轮次、步骤与事件：三层粒度分别解决什么</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#section-3">三、模型可见历史：日志很完整，但模型不该看到全部日志</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#section-4">四、派生视图：轨迹界面不是另一份真相</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#section-5">五、恢复与分叉：为什么能共用同一套底座</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#section-6">六、「一切皆插件」与事件流为什么必须一起看</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#section-7">七、从技术可观测性到产品可理解性，还差一次翻译</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#section-8">八、这套架构的代价与边界</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#section-9">九、如果你想亲手观察这条事件流</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#section-10">结语：先保存事实，再决定让谁看见什么</a></div></li><li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#section-11">参考资料</a></div></li></ol></aside>
+    <article><a class="article-back" href="../blog.html">← 返回 Product Notes</a>
+      <header class="article-header"><p class="article-series">运行时与可观测</p><h1>DeepSeek Harness 的事件流：Agent 的「工作录像」是怎样生成的</h1><p class="article-dek">从运行事件、模型可见历史到轨迹界面、恢复与分叉</p><div class="article-meta">发布 2026-08-18 · 约 18 分钟<span class="article-tags" aria-label="文章标签"><span>deepseek-harness</span><span>agent-observability</span><span>event-sourcing</span><span>ai-product</span></span></div></header>
+      <div class="article-body">
+<p>第一次打开 DeepSeek Harness 的轨迹界面（Trajectory），我想到的是“Agent 的工作录像”：这一轮模型看到了什么、调用了哪个工具、工具返回了什么、子任务如何展开，似乎都能沿时间线继续检查。</p>
+
+<p>但真正值得拆解的不是这张表格，而是它下面的数据结构。轨迹界面（Trajectory）不是在 Agent 跑完以后临时拼出来的一份调试报告。它建立在同一份会话事件日志上；聊天、模型上下文、统计、恢复和分叉，也都从这份日志派生。</p>
+
+<div class="callout callout-abstract">
+<p class="callout-title">本文的核心判断</p>
+<p>DeepSeek Harness 最有价值的技术选择，不是“展示更多过程”，而是先把 Agent 运行定义成可追加、可派生、可回放的事件事实，再让不同界面按自己的目的读取它。</p>
+</div>
+
+<p>这篇文章不做模型能力或代码质量测评，只回答一个更具体的问题：<strong>DSH 如何把一次 Agent 运行，变成可以观察、恢复、分叉和重新解释的事件流？</strong></p>
+
+<p>先把后面会反复出现的术语翻译成一条更直观的链路：</p>
+
+<table>
+<thead><tr><th>中文对象</th><th>源码术语</th><th>它解决的问题</th></tr></thead>
+<tbody>
+<tr><td>运行事实</td><td><code>Session Event</code></td><td>这次 Agent 实际发生了什么</td></tr>
+<tr><td>模型可见历史</td><td><code>Surface</code></td><td>下一次模型调用应该看到哪些消息</td></tr>
+<tr><td>面向不同用途的派生视图</td><td><code>Projection</code></td><td>聊天、统计和调试界面分别怎样读取同一份事实</td></tr>
+<tr><td>轨迹检查界面</td><td><code>Trajectory</code></td><td>开发者怎样按轮次、步骤和工具调用下钻</td></tr>
+<tr><td>恢复与分叉</td><td><code>Resume / Fork</code></td><td>怎样从稳定历史继续，或创建另一条运行分支</td></tr>
+</tbody>
+</table>
+
+<h2 id="section-1">一、会话事件日志：不是聊天记录，而是唯一真源</h2>
+
+<p>在 DSH 当前的会话模型里，<code>Session</code> 是由类型化 <code>SessionEvent</code> 组成的仅追加日志。LLM 消息历史并不单独保存，而是从日志派生；恢复或回放也不是读取另一份“对话快照”，而是再次折叠同一组事件。</p>
+
+<p>这和普通聊天产品的直觉不一样。普通聊天记录往往只关心“用户说了什么、助手回答了什么”；Agent Runtime 还必须记录一轮执行如何展开：</p>
+
+<table>
+<thead><tr><th>事件族</th><th>记录的事实</th><th>为什么重要</th></tr></thead>
+<tbody>
+<tr><td><code>turn/start</code> / <code>turn/end</code></td><td>一轮请求从何处开始、因何结束</td><td>区分完成、取消、阻塞、错误、截断和崩溃中断</td></tr>
+<tr><td><code>step/start</code> / <code>step/end</code></td><td>一次模型调用及其请求的工具执行</td><td>把长任务拆成可定位的运行单元</td></tr>
+<tr><td><code>user/message</code></td><td>用户输入或被注入的上下文</td><td>保留“这段信息从哪里进入模型”的来源差异</td></tr>
+<tr><td><code>assistant/chunk</code> / <code>assistant/message</code></td><td>流式分片与组装后的最终消息</td><td>同时支持流式回放与稳定的消息历史</td></tr>
+<tr><td><code>tool/call</code> / <code>tool/result</code></td><td>工具名、原始参数、结果、错误与展示元数据</td><td>把一次动作和它的结果可靠配对</td></tr>
+<tr><td><code>request/header</code></td><td>模型配置、系统提示词和工具 schema</td><td>让一次模型请求具备可重建条件</td></tr>
+</tbody>
+</table>
+
+<p>把它简化成一段事件流，大致是这样：</p>
+
+<div class="highlight"><pre><code>seq 41  turn/start        { turn: 3 }
+seq 42  user/message      { source: "user", content: [...] }
+seq 43  step/start        { turn: 3, step: 1 }
+seq 44  request/header    { model, system, tools }
+seq 45  assistant/chunk   { ... }
+seq 46  tool/call         { callId: "c1", name: "search", arguments: "..." }
+seq 47  tool/result       { callId: "c1", message: [...] }
+seq 48  assistant/message { message: [...], usage: {...} }
+seq 49  step/end          { turn: 3, step: 1 }
+seq 50  turn/end          { turn: 3, reason: "completed" }</code></pre></div>
+
+<p>这里的 <code>seq</code> 是会话内连续递增的位置。事件数据必须能无损序列化为 JSON，连流式 chunk 也不能在规范日志里随意过滤。它带来的直接好处是：持久化层拿到的不是一份“总结过的运行结果”，而是可以原样重建的事实序列。</p>
+
+<p>这也是为什么“展示一条 Trace”和“拥有事件溯源的 Session”不是一回事。前者可能只是事后写入的观测日志；后者直接成为系统状态的来源。</p>
+
+<h2 id="section-2">二、轮次、步骤与事件：三层粒度分别解决什么</h2>
+
+<p>DSH 把执行边界拆成三层。一个<strong>轮次（Turn）</strong>包围一次用户请求驱动的模型循环；一个轮次可以包含多个<strong>步骤（Step）</strong>；一个步骤对应一次模型调用，以及该模型调用所请求的工具执行；最细的事实再落成<strong>事件（Event）</strong>。</p>
+
+<pre class="mermaid">flowchart LR
+    T["第 3 轮"] --> S1["步骤 1 · 模型调用"]
+    S1 --> C1["tool/call"]
+    C1 --> R1["tool/result"]
+    R1 --> S2["步骤 2 · 再次模型调用"]
+    S2 --> A["assistant/message"]
+    A --> E["turn/end"]
+</pre>
+
+<p>这三个粒度让不同问题有了稳定坐标：</p>
+
+<ul>
+<li>用户说“这一轮为什么失败”，可以先看轮次的结束原因。</li>
+<li>模型为什么在工具返回后改变判断，可以定位到前后两个步骤。</li>
+<li>具体哪次参数错误、哪个工具被拒绝，则继续下钻到单条事件。</li>
+</ul>
+
+<p><code>turn/end</code> 也不是简单的 success / failure。当前事件词汇会区分完成、取消、阻塞、错误、达到输出上限，以及持久化层在崩溃恢复时补写的 <code>interrupted</code>。这个细节很重要：恢复系统不能把“进程没了”伪装成“任务完成了”。</p>
+
+<h2 id="section-3">三、模型可见历史：日志很完整，但模型不该看到全部日志</h2>
+
+<p>事件日志是唯一真源，不代表其中每条记录都要进入下一次模型上下文。DSH 为此引入了<strong>模型可见历史（Surface）</strong>：从完整日志里派生出当前模型应该看到的有序消息。</p>
+
+<p>核心事件中，只有三类会生成模型消息：</p>
+
+<ul>
+<li><code>user/message</code>：用户输入或合成注入的 user-role 上下文。</li>
+<li><code>assistant/message</code>：一个 Step 组装完成后的助手消息。</li>
+<li><code>tool/result</code>：作为后续模型输入的工具结果。</li>
+</ul>
+
+<p><code>assistant/chunk</code>、Turn / Step 边界、请求头、统计与其他插件事件仍保留在日志中，但不会直接变成消息历史。换句话说，DSH 同时保留了两种不同的完整性：</p>
+
+<blockquote>
+<p><strong>日志完整性</strong>回答“系统实际发生过什么”；<strong>上下文完整性</strong>回答“下一次模型调用需要看到什么”。两者不能混为一谈。</p>
+</blockquote>
+
+<p>Surface 还支持两种进入方式：正常的 <code>append</code>，以及对既有消息区间执行 <code>replace</code>。后者可以被上下文压缩使用：压缩摘要替换模型可见面上的一段旧历史，但旧事件并没有从日志里消失。</p>
+
+<pre class="mermaid">flowchart TB
+    L["仅追加的会话事件日志"] --> O1["原始消息与工具结果仍保留"]
+    L --> S["折叠出模型可见历史"]
+    S --> N1["当前消息"]
+    S --> N2["压缩摘要 · replace(range)"]
+    S --> N3["最新工具结果"]
+    N1 --> M["下一次 Model Context"]
+    N2 --> M
+    N3 --> M
+</pre>
+
+<p>这解决了长任务里的一个关键矛盾：为了继续运行，模型上下文可能必须压缩；为了调试、审计和重放，系统又不能把压缩前的事实抹掉。模型可见历史负责“现在怎么读”，事件日志负责“当时发生过什么”。</p>
+
+<h2 id="section-4">四、派生视图：轨迹界面不是另一份真相</h2>
+
+<p>如果会话事件是统一的写入事实，那么聊天、轨迹、统计和任务状态就是不同的<strong>派生视图（Projection）</strong>。DSH 的会话投影机制把这种关系做得很明确：领域插件注册纯同步的 <code>init → apply(event) → view</code> 单元，框架把每个已提交事件折叠进去，再向客户端提供当前完整值。</p>
+
+<div class="highlight"><pre><code>state0 = init()
+state1 = apply(state0, event[0])
+state2 = apply(state1, event[1])
+...
+clientView = view(stateN)</code></pre></div>
+
+<p>同一个 Session 因此可以有多种视图，而不需要每个 UI 自己解析原始事件：</p>
+
+<pre class="mermaid">flowchart LR
+    E["会话事件流"] --> P1["模型消息历史"]
+    E --> P2["对话视图"]
+    E --> P3["轨迹检查视图"]
+    E --> P4["待办 / 统计 / 遥测视图"]
+    P1 --> M["Model"]
+    P2 --> U1["聊天界面"]
+    P3 --> U2["开发者轨迹界面"]
+    P4 --> U3["状态与可观测系统"]
+</pre>
+
+<p>投影快照还带有统一的 <code>asOfSeq</code> 水位线，说明所有值共同反映到哪一条事件。对前端来说，这比“分别请求消息、统计、状态，然后祈祷它们碰巧来自同一时刻”可靠得多。</p>
+
+<p>当前 Trajectory 界面也并非把 JSONL 原样倾倒出来。它按 Turn 组织记录，支持选择用户、助手、工具和嵌套子工具；局部检查器再展开 token、耗时、输入、输出和计时。长会话会从尾部打开，向上按页加载更早历史，只挂载当前可见窗口；用户向上检查旧记录时，自动跟随尾部会暂停，避免新事件把视线抢走。</p>
+
+<p>所以，更准确的说法不是“DeepSeek 把后台日志放到了前台”，而是：<strong>它把事件流投影成了一种面向 Harness 开发者的检查界面。</strong></p>
+
+<h2 id="section-5">五、恢复与分叉：为什么能共用同一套底座</h2>
+
+<p>当历史是连续事件流时，恢复和分叉就可以退化成两个清晰动作：选择一段稳定前缀，把它作为新 Session 的 seed，再从边界之后继续追加事件。</p>
+
+<p>DSH 的普通 Session fork 会选择到某个事件序号为止的前缀，并要求边界不能停在一个尚未闭合的 Turn 内。这项约束并不花哨，却决定了分叉后拿到的是一致状态，而不是一半工具调用、一半模型回复的损坏现场。</p>
+
+<p>带 seed 的 Session 会写入 <code>session/end-seed</code> 边界，用来区分：</p>
+
+<ul>
+<li>哪些事件来自恢复、fork 或 replay 继承的历史；</li>
+<li>哪些事件是当前生命周期真正新写入的工作。</li>
+</ul>
+
+<p>再加上日志里的 <code>request/header</code>——模型、调用配置、系统提示词和工具 schema——一次请求就不只是“有答案”，而是尽量保留了重建输入所需的运行条件。</p>
+
+<pre class="mermaid">flowchart LR
+    A["Parent Session\nseq 0…120"] -->|"选择稳定边界 96"| B["Seed\nseq 0…96"]
+    B --> C["session/end-seed"]
+    C --> D["Child Session\n继续追加 98…"]
+    A -->|"从尾部恢复"| E["恢复后的会话"]
+</pre>
+
+<p>当然，“可重建”不等于“确定性复现”。外部 API、文件系统、模型输出和时间都会变化。事件溯源保证的是输入、边界与既有结果可追溯；如果要做严格 Replay，还需要对外部副作用、工具响应和模型采样另行控制。</p>
+
+<h2 id="section-6">六、「一切皆插件」与事件流为什么必须一起看</h2>
+
+<p>DSH 的另一个显眼口号是 Everything is a Plugin。单独看，它很容易被理解成“组件都能替换”。真正有工程价值的地方在于：插件不只提供能力，也能扩展事件词汇和投影。</p>
+
+<p>例如，压缩机制可以贡献 <code>compaction/start</code>、<code>compaction/summary</code>、<code>compaction/end</code>；Hook 桥接可以记录 <code>hook/invoked</code> 与 <code>hook/result</code>。这些插件事件保留在日志中，但不必进入模型 Surface。插件还可以注册自己的投影，把事件折叠成客户端需要的领域状态。</p>
+
+<p>这形成了一条更完整的替换链：</p>
+
+<ol>
+<li>替换一个 Loop、工具、压缩策略或 UI 插件。</li>
+<li>插件继续把自己的运行事实写入统一会话日志。</li>
+<li>Trajectory、Telemetry 或领域投影用同一序号空间观察变化。</li>
+<li>比较替换前后的失败位置、耗时、调用路径和最终结果。</li>
+</ol>
+
+<p>只有插件化，很难证明替换后的系统究竟发生了什么；只有轨迹，又很难把发现的问题变成可替换的工程边界。DSH 把“可组合”和“可观察”放在同一套运行结构里，这才是它比一张漂亮 Trace 更值得研究的地方。</p>
+
+<p>它对未知事件也采取了偏保守的策略：纯信息记录可以显式标为可忽略；遇到无法识别、且可能影响重建语义的必需事件，读取方应拒绝重建，而不是悄悄跳过。这种选择牺牲了一点兼容便利，换来的是不会在缺失关键状态时假装恢复成功。</p>
+
+<h2 id="section-7">七、从技术可观测性到产品可理解性，还差一次翻译</h2>
+
+<p>到这里可以看见，DSH 的“透明”至少包含四个层次：</p>
+
+<table>
+<thead><tr><th>层次</th><th>DSH 提供的基础</th><th>它支持的判断</th></tr></thead>
+<tbody>
+<tr><td>事实</td><td>连续、无损、可扩展的 Session Event</td><td>当时发生了什么</td></tr>
+<tr><td>结构</td><td>Turn / Step / callId / source / seq</td><td>事件属于哪轮、哪步、哪次调用</td></tr>
+<tr><td>视图</td><td>模型可见历史与多种派生视图</td><td>模型、聊天界面或调试界面分别该读什么</td></tr>
+<tr><td>操作</td><td>恢复、分叉、分页检查与时间线定位</td><td>从哪里继续、在哪里比较、如何下钻</td></tr>
+</tbody>
+</table>
+
+<p>但这些仍主要是 Harness 开发者的语言。普通任务用户未必需要知道 <code>step 4</code> 发出了两个 Tool Call；他可能只需要知道“正在核对两份来源，其中一份访问失败，结论暂时降级”。</p>
+
+<p>因此我更倾向于把 Agent 可见性分成三层：</p>
+
+<ul>
+<li><strong>任务层</strong>：目标、阶段、阻塞、当前产出和下一步动作，默认可见。</li>
+<li><strong>证据层</strong>：来源、文件、关键依据、检查结果与不确定性，按需展开。</li>
+<li><strong>运行层</strong>：Tool Call、Context、Session Event、完整 Trace、重试与回放，服务开发、评测、审计和排障。</li>
+</ul>
+
+<p>这三层不是三份数据。更好的实现是从同一事件事实源生成不同语义密度的投影。DSH 已经把底层条件铺得很完整，真正的产品工作，是继续缩短 Runtime 状态与用户判断之间的距离。</p>
+
+<h2 id="section-8">八、这套架构的代价与边界</h2>
+
+<p>事件溯源并不是免费的午餐。</p>
+
+<ul>
+<li><strong>日志会持续增长。</strong>长 Session 需要分页、虚拟化、压缩编码和投影缓存，DSH 当前代码也已经在处理这些问题。</li>
+<li><strong>Schema 演进更谨慎。</strong>事件一旦进入持久化格式，修改字段与重建语义就可能成为破坏性变更。</li>
+<li><strong>Trace 可能包含敏感内容。</strong>模型输入、工具参数、文件差异和结果元数据不能因为“方便调试”就默认永久保存或对所有角色开放。</li>
+<li><strong>可观察不等于可评测。</strong>有完整事件流，只是具备归因素材；是否完成任务、证据是否充分，仍需要 Eval 与业务标准。</li>
+<li><strong>运行记录不等于模型思维链。</strong>产品可以展示可核验的输入、动作、结果和状态变化，不应把隐藏推理过程当作透明度目标。</li>
+</ul>
+
+<p>而且 DSH 目前仍处于 developer preview，官方明确提醒未来会有破坏兼容性的变化。本文描述的是 2026 年 8 月 17 日核对到的主分支设计，不应被当作稳定 API 合约。</p>
+
+<h2 id="section-9">九、如果你想亲手观察这条事件流</h2>
+
+<p>官方当前提供的最短启动方式是：</p>
+
+<div class="highlight"><pre><code>npx @deepseek-ai/dsh web</code></pre></div>
+
+<p>默认 Web UI 地址是 <code>http://127.0.0.1:3080</code>。进入一次真实会话后，不要先盯着最终答案，可以沿 Trajectory 依次检查：</p>
+
+<ol>
+<li>一个 Turn 内为什么出现多个 Step。</li>
+<li>上下文注入与用户原始输入如何区分来源。</li>
+<li><code>tool/call</code> 和 <code>tool/result</code> 如何配对。</li>
+<li>模型输入、工具结果、耗时与 token 分别在哪一层展开。</li>
+<li>恢复或分叉后，继承历史和新运行的边界在哪里。</li>
+</ol>
+
+<p>如果只把它当成一款 Coding Agent，最有意思的部分反而会被错过。DSH 更像一个用真实产品界面暴露 Agent Runtime 结构的开发者预览。</p>
+
+<h2 id="section-10">结语：先保存事实，再决定让谁看见什么</h2>
+
+<p>DSH 给我的最大启发，不是“Agent 应该展示全部过程”。恰恰相反：正因为底层事件保存得足够完整，上层才有条件克制地展示。</p>
+
+<p>完整日志负责追溯，模型可见历史负责下一次模型上下文，派生视图负责不同产品界面，轨迹视图负责专业检查，任务界面则应该继续翻译成用户能采取行动的语言。</p>
+
+<blockquote>
+<p>Agent 的可见性，不是把后台搬到前台，而是让同一份运行事实，在正确的时刻帮助不同的人做出正确判断。</p>
+</blockquote>
+
+<h2 id="section-11">参考资料</h2>
+
+<ul>
+<li><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/README.zh.md">DeepSeek Harness 官方 README</a></li>
+<li><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/subsystems/session.zh.md">Session 事件溯源模型</a></li>
+<li><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/subsystems/session-projection.zh.md">Session Projection</a></li>
+<li><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-trajectory/README.zh.md">Trajectory UI 包说明</a></li>
+<li><a href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/core/session/src/types.ts">Session 类型定义</a></li>
+</ul>
+    </div>
+    <div class="post-footer"></div>
+  </article>
+</main>
+</body>
+</html>
+</div>
+    </article>
+  </div></div></main>
+  <a class="note-companion" href="../light-world.html" aria-label="去光的阅读室，认识小光" title="小光在这里陪你阅读"></a>
+  <script>
+    document.querySelectorAll('.article-toc-toggle').forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true'
+        const children = document.getElementById(toggle.getAttribute('aria-controls'))
+        toggle.setAttribute('aria-expanded', String(!expanded))
+        toggle.setAttribute('aria-label', (expanded ? '展开 ' : '折叠 ') + toggle.closest('.article-toc-item').querySelector('.article-toc-link').textContent)
+        children.hidden = expanded
+      })
+    })
+  </script>
+</body></html>
