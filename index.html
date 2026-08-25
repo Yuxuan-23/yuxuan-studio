@@ -302,6 +302,38 @@
             </div>
           </div>
         </div>
+        <div
+          id="explore-map"
+          class="explore-gateway"
+          aria-labelledby="explore-gateway-title"
+        >
+          <span class="explore-gateway-visual">
+            <img
+              src="./assets/explore-map-thumbnail.jpg"
+              width="960"
+              height="545"
+              alt="蓝天海面上的四座能力岛屿探索地图"
+              loading="lazy"
+              decoding="async"
+            />
+          </span>
+          <span class="explore-gateway-copy">
+            <span class="explore-gateway-meta">实践总结 · 四种实践，同一产品世界</span>
+            <strong id="explore-gateway-title">能力探索地图</strong>
+            <span class="explore-gateway-description">复杂系统、数据判断、Agent 产品与创作表达，构成我把复杂问题转化为清晰、可用产品的四个实践入口。</span>
+            <span class="explore-gateway-summary" aria-label="四种产品实践">
+              <span><b>理解复杂系统</b><small>系统链路 · 平台抽象</small></span>
+              <span><b>用数据形成判断</b><small>建模分析 · 结果解释</small></span>
+              <span><b>把能力做成产品</b><small>产品定义 · 原型验证</small></span>
+              <span><b>让价值成为体验</b><small>交互设计 · 创作表达</small></span>
+            </span>
+            <span class="explore-gateway-synthesis">
+              <b>Complexity-to-Product Builder</b>
+              <em>理解复杂，赋予它清晰、可用的形态。</em>
+            </span>
+          </span>
+          <a class="explore-gateway-action" href="./explore.html" aria-label="进入能力探索地图">进入探索地图 <i aria-hidden="true">↗</i></a>
+        </div>
       </section>
 
       <section class="bring capability-profile-v2" id="bring" aria-labelledby="bring-title">
@@ -450,7 +482,6 @@
           </a>
         </div>
         <footer>
-          <a class="footer-explore" href="./explore.html">探索世界 ↗</a>
           <span class="footer-identity">宇轩 YUXUAN · © 2026</span>
           <a class="footer-back-top" href="#top">回到顶部 ↑</a>
         </footer>
@@ -534,7 +565,7 @@
       resize();
       raf = requestAnimationFrame(draw);
 
-      const revealItems = document.querySelectorAll('.proof-band, .featured-project, .supporting-heading, .supporting-card, .selected-notes, .notes-home-list a, .world-teaser, .contact, .contact-channel');
+      const revealItems = document.querySelectorAll('.proof-band, .featured-project, .supporting-heading, .supporting-card, .selected-notes, .notes-home-list a, .world-teaser, .contact-channel, .explore-gateway');
       revealItems.forEach((item) => item.classList.add('motion-reveal'));
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
