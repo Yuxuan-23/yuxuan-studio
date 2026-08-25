@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f2ec" />
+    <meta
+      name="description"
+      content="宇轩产品能力画像独立预览：沿用 How I build 原始设计，以三步方法组织六项产品能力。"
+    />
+    <meta property="og:title" content="产品能力画像｜Yuxuan Studio" />
+    <meta property="og:description" content="从真实问题出发，把产品机制做成可运行、可检查、可迭代的系统。" />
+    <meta property="og:image" content="./assets/xixi-website-visual.png" />
+    <title>产品能力画像｜Yuxuan Studio</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/brand/favicon-compact-32-v2.png" />
+    <link rel="icon" type="image/png" sizes="64x64" href="./assets/brand/favicon-compact-64-v2.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/brand/apple-touch-icon-compact-v2.png" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./scripts/site-nav.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">跳到主要内容</a>
+
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="./index.html" aria-label="返回宇轩 Yuxuan 首页">
+          <img
+            class="brand-mark"
+            src="./assets/brand/favicon-master-compact-v2.png"
+            alt=""
+            width="38"
+            height="38"
+            decoding="async"
+          />
+          <span>宇轩 <i>YUXUAN</i></span>
+        </a>
+        <nav class="site-nav" aria-label="主导航">
+          <details class="site-nav-projects"><summary>项目 <span aria-hidden="true">⌄</span></summary><div class="site-nav-menu"><a href="https://litrace.site/" target="_blank" rel="noreferrer"><strong>LightTrace · 光溯智能诊断</strong><small>旗舰项目 · 独立网站 ↗</small></a><a href="./enterprise-systems.html"><strong>企业级消息系统</strong><small>复杂业务链路产品化</small></a><a href="./data-decisions.html"><strong>数据建模与营销决策</strong><small>客户经营与排序模型</small></a><a href="./light-world.html"><strong>光的世界</strong><small>Creative AI 与内容系统</small></a><a class="site-nav-all-projects" href="./index.html#work">查看全部项目 <span aria-hidden="true">→</span></a></div></details>
+          <a class="site-nav-link" href="./index.html#bring">能力</a>
+          <a class="site-nav-link" href="./blog.html">笔记</a>
+          <a class="site-nav-link" href="./index.html#about">关于</a>
+          <a
+            class="site-nav-featured"
+            href="https://litrace.site/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="在新窗口查看 LightTrace 完整案例"
+          >
+            <span>LightTrace 完整案例</span>
+            <i aria-hidden="true">↗</i>
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="content">
+      <section class="bring" id="bring" aria-labelledby="bring-title">
+        <div class="bring-inner">
+          <div class="bring-center">
+            <span class="bring-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="bringSphere" x1="16" y1="14" x2="48" y2="38" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#ffe083" />
+                    <stop offset="1" stop-color="#f7c946" />
+                  </linearGradient>
+                </defs>
+                <ellipse cx="32" cy="52" rx="18" ry="5" fill="#123981" />
+                <path d="M20 52 L22 46 L42 46 L44 52 Z" fill="#1a4a9c" />
+                <rect x="30" y="32" width="4" height="16" fill="#123981" />
+                <circle cx="32" cy="26" r="12" fill="url(#bringSphere)" />
+                <ellipse cx="32" cy="26" rx="20" ry="5" fill="none" stroke="#ed5a2d" stroke-width="3" stroke-linecap="round" />
+                <circle cx="26" cy="22" r="3" fill="#fff" fill-opacity=".5" />
+              </svg>
+            </span>
+            <h2 id="bring-title">How I build</h2>
+            <p>从真实问题出发，把产品机制做成可运行、可检查、可迭代的系统。</p>
+          </div>
+
+          <div class="capability-cloud" aria-label="三个构建阶段与六项产品能力">
+            <svg class="capability-orbits" viewBox="0 0 1280 740" preserveAspectRatio="none" aria-hidden="true">
+              <g class="orbit-pair orbit-product">
+                <path d="M426 165 A296.4 296.4 0 0 1 854 165" />
+                <path d="M460 205 A244.2 244.2 0 0 1 820 205" />
+              </g>
+              <g class="orbit-pair orbit-agent">
+                <path d="M940 358 A300.24 300.24 0 0 1 850.2 584.2" />
+                <path d="M884.1 361 A244.2 244.2 0 0 1 810.7 543.1" />
+              </g>
+              <g class="orbit-pair orbit-governance">
+                <path d="M340 358 A300.24 300.24 0 0 0 429.8 584.2" />
+                <path d="M395.9 361 A244.2 244.2 0 0 0 469.3 543.1" />
+              </g>
+            </svg>
+
+            <span class="capability-node capability-domain domain-product">进入真实问题</span>
+            <span class="capability-node capability-skill skill-needs">复杂业务与系统理解</span>
+            <span class="capability-node capability-skill skill-prototype">0→1 Owner 与复杂落地</span>
+
+            <span class="capability-node capability-domain domain-agent">设计产品机制</span>
+            <span class="capability-node capability-skill skill-workflow">产品定义与体验设计</span>
+            <span class="capability-node capability-skill skill-explain">Agent 工作流与质量治理</span>
+
+            <span class="capability-node capability-domain domain-governance">构建并验证</span>
+            <span class="capability-node capability-skill skill-evaluation">数据与模型验证</span>
+            <span class="capability-node capability-skill skill-consensus">技术理解与快速验证</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

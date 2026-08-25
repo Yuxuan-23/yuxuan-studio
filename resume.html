@@ -11,7 +11,6 @@
     --body: 13.333px;
     --lh: 1.38;
     --section: 6px;
-    --article: 5px;
     --item: 1.2px;
     --ink: #1f2933;
     --muted: #667085;
@@ -55,10 +54,9 @@
   .target,
   strong { color: var(--dark); font-weight: 760; }
   .target { font-size: 12.3px; }
-  .contact { color: var(--muted); font-size: 9.6px; }
+  .contact { margin-top: 5px; color: var(--muted); font-size: 9.6pt; }
   .meta,
   .time { color: #778294; font-size: 9pt; line-height: 1.22; }
-  .contact { margin-top: 5px; }
 
   .back-home {
     position: fixed;
@@ -94,6 +92,18 @@
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 12px;
     align-items: baseline;
+  }
+  .work-title-row {
+    grid-template-columns: 1.05fr 1fr 0.48fr auto;
+    gap: 12px;
+    padding: 0 4px 0 9px;
+  }
+  .work-role {
+    color: #778294;
+    font-size: 9pt;
+    line-height: 1.22;
+    text-align: center;
+    white-space: nowrap;
   }
 
   article {
@@ -143,11 +153,45 @@
     text-underline-offset: 1px;
   }
 
+  .advantage-list {
+    display: grid;
+    gap: 2px;
+    margin: 3.5px 0 0;
+    font-size: 13px;
+  }
+  .advantage-row {
+    display: block;
+    padding-left: 14px;
+    text-indent: -14px;
+  }
+  .advantage-dot {
+    display: inline-block;
+    width: 14px;
+    color: var(--dark);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 0;
+    text-indent: 0;
+    transform: translateY(-0.08em);
+  }
+  .advantage-label { white-space: normal; }
+  .advantage-copy { text-wrap: wrap; }
+
   .bullet-list { margin: 3.5px 0 0; }
   .bullet { margin: var(--item) 0; }
   .featured-project .bullet {
     text-align: justify;
     text-justify: inter-ideograph;
+  }
+  .modeling-project .bullet {
+    padding-left: 12px;
+    text-indent: -12px;
+  }
+  .modeling-project .bullet::before {
+    display: inline-block;
+    width: 12px;
+    margin-right: 0;
+    text-indent: 0;
   }
   .metric { white-space: nowrap; }
   .bullet::before {
@@ -183,7 +227,7 @@
     .back-home { display: none; }
   }
 </style>
-<title>王宇轩｜AI 产品经理</title>
+<title>王宇轩｜AI 产品经理 · Agent 产品</title>
 </head>
 <body>
 <a class="back-home" href="./index.html#top">← 返回个人网站</a>
@@ -192,25 +236,18 @@
 <header style="border-bottom: 0px;">
 <div class="identity">
 <h1 style="font-size: 20pt;">王宇轩</h1>
-<div class="target" style="font-size: 11.5pt;">AI 产品经理｜智能体产品与复杂场景产品化</div>
-<div class="contact" style="font-size: 10pt;">
-<span>邮箱：wangyx9621@163.com</span>
-</div>
+<div class="target" style="font-size: 11.5pt;">AI 产品经理｜Agent 产品 · AI 应用 · 复杂场景产品化</div>
 </div>
 </header>
 <section>
 <div class="section-heading">
 <h2 style="font-size: 12pt;">核心优势</h2>
-<span class="section-rule" aria-hidden="true">
-</span>
+<span class="section-rule" aria-hidden="true"></span>
 </div>
-<div class="bullet-list skills-list">
-<div class="bullet">
-<strong>企业级 AI 产品 0→1：</strong>主导中心级 AI 智能诊断产品从定义、MVP 到上线迭代，推动多个场景进入真实业务使用。</div>
-<div class="bullet">
-<strong>复杂场景产品化：</strong>基于 5 年复杂系统与跨团队交付经验，将流程、知识与协作规则抽象为可配置、可复核、可扩展的产品能力。</div>
-<div class="bullet">
-<strong>智能体与质量闭环：</strong>具备意图路由、多智能体编排、RAG、工具调用与人机协作设计经验，通过证据追踪、Bad Case 归因与版本回归持续优化产品效果。</div>
+<div class="advantage-list">
+<div class="advantage-row"><span class="advantage-dot">•</span><strong class="advantage-label">Agent 产品 0→1：</strong><span class="advantage-copy">主导企业级 Agent 产品从需求定义、MVP 到真实业务上线，推动跨团队产品落地。</span></div>
+<div class="advantage-row"><span class="advantage-dot">•</span><strong class="advantage-label">复杂场景产品化：</strong><span class="advantage-copy">将复杂流程、专家知识与协作规则抽象为可配置、可复核、可扩展的 Agent 产品机制。</span></div>
+<div class="advantage-row"><span class="advantage-dot">•</span><strong class="advantage-label">技术理解与快速验证：</strong><span class="advantage-copy">具备亿级消息平台治理与大规模数据建模经验，可通过 vibe coding 快速实现原型并验证方案。</span></div>
 </div>
 </section>
 <section>
@@ -239,14 +276,14 @@
 </span>
 </div>
 <article>
-<div class="row-title">
+<div class="row-title work-title-row">
 <h3>中国工商银行 · 业务研发中心</h3>
-<span class="time" style="font-size: 9pt;">2021.03 - 2026.06</span>
+<span class="work-role">金融科技经理三级 · AI 产品 / 项目负责人</span>
+<span class="time" style="font-size: 9pt; grid-column: 4;">2021.03 - 2026.06</span>
 </div>
-<div class="meta" style="font-size: 9pt;">职级：金融科技经理三级 · 岗位：应用技术岗</div>
-<div class="bullet-list ">
-<div class="bullet">负责消息服务、数据报送、电子影像等公共平台的技术改造验收、方案评审、跨团队交付与风险治理。</div>
-<div class="bullet">主导多项自助工具建设，沉淀复杂链路分析与证据核验方法，支撑后续智能诊断产品定义。</div>
+<div class="bullet-list">
+<div class="bullet">长期负责消息触达、数据报送、电子影像等企业公共平台的全生命周期技术推进与治理；工作贯穿需求理解与评审、公共能力判断、技术与架构方案评审、研发协同、验收投产及生产稳定性反馈。</div>
+<div class="bullet">从跨系统核查中抽象高频问题，独立完成消息全链路核查产品的设计研发；2025 年起主导光溯 Agent 产品 0→1 与跨部门落地。</div>
 </div>
 </article>
 </section>
@@ -258,52 +295,42 @@
 </div>
 <article class="featured-project">
 <div class="row-title">
-<h3>「光溯」企业智能诊断产品：年度中心级 AI 大模型创新项目<span class="project-highlight"> ｜全中心 8 项之一</span>
-</h3>
-<span class="time" style="font-size: 9pt;">2025.05 - 2026.06</span>
+<h3>「光溯」企业级 Agent 智能诊断产品｜年度中心级 AI 大模型创新项目</h3>
+<span class="time" style="font-size: 9pt;">2025.03 - 2026.06</span>
 </div>
-<div class="meta" style="font-size: 9pt;">
-<span class="meta-label">角色：</span>产品 Owner · Agent 架构负责人 · 0→1 产品定义与体验设计</div>
+<div class="meta" style="font-size: 9pt;"><span class="meta-label">角色：</span>AI 产品负责人 · Agent 产品 0→1 · 智能体方案与体验设计</div>
 <div class="project-links-row" style="font-size: 9pt;">
-<span class="meta-label">产品案例：</span>
-<a class="resume-link" href="https://litrace.site">litrace.site</a> · <span class="meta-label">在线 Demo：</span>
-<a class="resume-link" href="https://app.litrace.site">app.litrace.site</a>
+<span class="meta-label">产品案例：</span><a class="resume-link" href="https://litrace.site">litrace.site</a>
+<span class="separator">·</span><span class="meta-label">在线 Demo：</span><a class="resume-link" href="https://app.litrace.site">app.litrace.site</a>
 </div>
-<div class="bullet-list ">
-<div class="bullet">
-<strong>产品定义与业务落地：</strong>针对跨应用定位依赖专家、知识分散等痛点，主导产品定位、MVP 与高保真原型；统筹 7 个部门推动复杂链路诊断、领域问答和日志分析进入真实业务使用。</div>
-<div class="bullet">
-<strong>产品化与规模扩展：</strong>设计自定义诊断场景与链路配置，使单点能力可复用、可扩展；建设覆盖 2000+ 应用、深度治理 35+ 核心应用的知识底座，整合配置、错误码、接口及常见问题方案。</div>
-<div class="bullet">
-<strong>智能体编排与跨层诊断：</strong>设计证据驱动的智能体工作流，通过意图识别完成业务、应用、系统、网络四领域路由，结合场景与链路构建诊断上下文；沿链路取证并按异常调用 RAG 与专项工具，实现跨层根因分析。</div>
-<div class="bullet">
-<strong>质量治理与评测：</strong>围绕关键能力、端到端任务和版本变更建立评测回归机制，结合 Gold Set、Bad Case 归因与人工抽检，持续优化根因命中、证据完整性和诊断时延。</div>
-<div class="bullet">
-<strong>业务价值：</strong>产品面向中心全部业务与技术部门；复杂长链路诊断由小时级缩短至分钟级，跨团队协同范围收敛 <span class="metric">75%</span>，根因定位命中率 <span class="metric">&gt;85%</span>，用户满意度达 <span class="metric">4.8/5</span>。</div>
+<div class="bullet-list">
+<div class="bullet"><strong>0→1 与业务价值：</strong>针对跨应用故障定位依赖专家、知识分散等问题，主导产品定位、MVP 与高保真原型，统筹 7 个部门落地；复杂诊断由小时级缩短至分钟级，根因定位命中率 <span class="metric">&gt;85%</span>，用户满意度 <span class="metric">4.8/5</span>。</div>
+<div class="bullet"><strong>场景产品化：</strong>面向中心全部业务与技术部门，设计可配置诊断场景与业务链路；结构化沉淀配置、错误码、接口、日志及常见问题方案，支撑 <span class="metric">2000+ 应用</span>、深度治理 <span class="metric">35+ 核心应用</span>。</div>
+<div class="bullet"><strong>Agent 工作流：</strong>通过意图识别完成业务、应用、系统、网络领域路由，基于场景与链路构建诊断上下文；沿链路采集证据，并按异常调用 RAG 与专项工具，实现跨层根因分析。</div>
+<div class="bullet"><strong>主动监测：</strong>将容器状态异常接入主动诊断链路，覆盖 <span class="metric">650+ 应用群</span>、累计 <span class="metric">6.2 万+ 有效异常告警</span>；结合实时状态、应用日志与常见问题知识辅助异常初判与根因定位。</div>
+<div class="bullet"><strong>效果评测：</strong>围绕根因命中、证据完整性与诊断时延建立评测机制，通过 Gold Set、Trace、Bad Case 归因、人工抽检与版本回归持续优化 Agent 效果。</div>
 </div>
 </article>
 <article>
 <div class="row-title">
-<h3>公共平台技术改造与工具建设</h3>
-<span class="time" style="font-size: 9pt;">2021.03 - 2026.06</span>
+<h3>企业级消息触达平台｜复杂业务链路产品化</h3>
+<span class="time" style="font-size: 9pt;">2023.09 - 2026.06</span>
 </div>
-<div class="meta" style="font-size: 9pt;">
-<span class="meta-label">角色：</span>技术改造项目负责人</div>
-<div class="bullet-list ">
-<div class="bullet">牵头日均亿级消息平台信创改造验收，统筹架构与方案评审、全链路测试、切流回退及风险处置，覆盖数据一致性、批量调度和高可用验证，保障平台平稳迁移与连续服务。</div>
-<div class="bullet">围绕消息、电子影像与批量任务的高频核查场景，设计并推动协议查询、覆盖率检查、版本控制、交易覆盖统计与历史追溯等自助工具落地，将分散人工查询沉淀为统一复用能力。</div>
+<div class="meta" style="font-size: 9pt;"><span class="meta-label">角色：</span>核查产品独立设计研发 · 平台改造验收牵头</div>
+<div class="bullet-list">
+<div class="bullet"><strong>亿级消息中枢治理：</strong>统一消息中枢上承业务应用、下接短信、手机银行、微信等渠道，日均承载亿级消息，覆盖协议订退及扣费、追缴、退费等涉账链路；牵头国产化改造验收与风险闭环。</div>
+<div class="bullet"><strong>核查产品 0→1：</strong>独立设计研发消息全链路核查产品，统一关联客户、协议、消息、渠道与回执，使业务人员可自助判断消息送达状态、协议状态及未发送原因。</div>
 </div>
 </article>
-<article>
+<article class="modeling-project">
 <div class="row-title">
-<h3>数据建模创新大赛：长尾客户资产提级预测<span class="project-highlight">｜全中心 62 支队伍第 5 名</span></h3>
+<h3>数据建模创新大赛｜长尾客户资产提级预测</h3>
 <span class="time" style="font-size: 9pt;">2024.09</span>
 </div>
-<div class="meta" style="font-size: 9pt;">
-<span class="meta-label">角色：</span>队长 · 主力建模负责人</div>
-<div class="bullet-list ">
-<div class="bullet">将低资产长尾客户的精准圈选需求转化为资产提级概率预测与排序问题，短期内完成业务理解与数据探查；基于营销触达、活动参与、交易行为及资产变化等维度开展特征工程，从 6340 万训练样本中筛选 106 个有效特征。</div>
-<div class="bullet">使用 XGBoost 构建模型并完成特征重要性与变量贡献分析，AUC 达 0.9339；成果提交数据运营部门，用于客户分层、高潜客户识别与精准触达策略参考。</div>
+<div class="meta" style="font-size: 9pt;"><span class="meta-label">角色：</span>队长 · 主力建模负责人</div>
+<div class="bullet-list">
+<div class="bullet"><strong>业务建模：</strong>面向长尾代发客户精准营销，构建下月资产提级倾向模型，支撑高潜客户圈选与营销资源配置；基于 <span class="metric">6340</span> 万条训练样本，围绕个人信息、资产情况、动账交易、营销触达和交互行为完成多维特征设计。</div>
+<div class="bullet"><strong>数据迭代：</strong>基于模型表现与特征重要性持续进行特征衍生与筛选；迭代 XGBoost 模型，并以客户下月真实资产提级情况验证预测效果，AUC 达 <span class="metric">0.9339</span>，模型效果位列<span class="metric">全中心 62 支队伍第 5 名</span>。</div>
 </div>
 </article>
 </section>
