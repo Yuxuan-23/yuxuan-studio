@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="zh-CN"><head>
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f4f2ec" /><title>Agent 的执行轨迹，应该让用户看见多少？｜宇轩 Yuxuan</title>
+  <meta name="theme-color" content="#f4f2ec" /><meta name="description" content="对比 Work、Codex、Claude Code 与 DeepSeek Harness 如何展示 Agent 执行过程，以及这些界面分别帮助用户做出什么判断。" /><title>从 Codex 到 DeepSeek Harness：四种 Agent 产品如何展示执行过程｜宇轩 Yuxuan</title>
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/brand/favicon-compact-32-v2.png" /><link rel="icon" type="image/png" sizes="64x64" href="../assets/brand/favicon-compact-64-v2.png" /><link rel="apple-touch-icon" sizes="180x180" href="../assets/brand/apple-touch-icon-compact-v2.png" />
   <link rel="stylesheet" href="../styles.css" />
+  <script type="module" src="../scripts/site-nav.js"></script>
   <style>.trace-product-note .article-body .mermaid svg{min-width:0}</style>
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs'
@@ -13,12 +14,12 @@
   <a class="skip-link" href="#article">跳到主要内容</a>
   <header class="site-header"><div class="header-inner">
     <a class="brand" href="../index.html#top" aria-label="返回宇轩 Yuxuan 首页"><img class="brand-mark" src="../assets/brand/favicon-master-compact-v2.png" alt="" width="38" height="38" decoding="async" /><span>宇轩 <i>YUXUAN</i></span></a>
-    <nav class="site-nav" aria-label="主导航"><a href="../index.html#work">项目</a><a href="../index.html#bring">能力</a><a href="../blog.html" aria-current="page">笔记</a><a href="../index.html#about">关于</a></nav>
+    <nav class="site-nav" aria-label="主导航"><details class="site-nav-projects"><summary>项目 <span aria-hidden="true">⌄</span></summary><div class="site-nav-menu"><a href="https://litrace.site/" target="_blank" rel="noreferrer"><strong>LightTrace · 光溯智能诊断</strong><small>旗舰项目 · 独立网站 ↗</small></a><a href="../enterprise-systems.html"><strong>企业级消息系统</strong><small>复杂业务链路产品化</small></a><a href="../data-decisions.html"><strong>数据建模与营销决策</strong><small>客户经营与排序模型</small></a><a href="../light-world.html"><strong>光的世界</strong><small>Creative AI 与内容系统</small></a><a class="site-nav-all-projects" href="../index.html#work">查看全部项目 <span aria-hidden="true">→</span></a></div></details><a class="site-nav-link" href="../index.html#bring">能力</a><a class="site-nav-link" href="../blog.html" aria-current="page">笔记</a><a class="site-nav-link" href="../index.html#about">关于</a></nav>
   </div></header>
   <main class="notes-main" id="article"><div class="notes-wrap"><div class="article-shell">
     <aside class="article-toc" aria-label="本章目录"><small>本章目录 · CONTENTS</small><ol class="article-toc-list article-toc-root">
-      <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#why-stop">为什么把 Trace 放进主界面</a></div></li>
       <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#comparison">四种产品在让用户判断什么</a></div></li>
+      <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#why-stop">为什么把 Trace 放进主界面</a></div></li>
       <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#not-log">Trace 不是一条更长的日志</a></div></li>
       <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#session-event">为什么这张 Trace 能成为产品</a></div></li>
       <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#plugin-trace">插件化与 Trace 为什么要一起看</a></div></li>
@@ -26,39 +27,20 @@
       <li class="article-toc-item article-toc-depth-0"><div class="article-toc-row"><span class="article-toc-spacer" aria-hidden="true"></span><a class="article-toc-link" href="#pm-judgment">执行轨迹应该展示到哪一层</a></div></li>
     </ol></aside>
     <article><a class="article-back" href="../blog.html">← 返回 Product Notes</a>
-      <header class="article-header"><p class="article-series">AGENT TRACE VISIBILITY · 本地验收稿</p><h1>Agent 的执行轨迹，应该让用户看见多少？</h1><p class="article-dek">从 DeepSeek Harness 把 Trace 放进主界面说起</p><div class="article-meta">本地验收稿 2026-08-18 · 约 14 分钟<span class="article-tags" aria-label="文章标签"><span>deepseek-harness</span><span>agent-ux</span><span>product-judgment</span><span>agent-observability</span></span></div></header>
+      <header class="article-header"><p class="article-series">产品判断 · Agent 界面对比</p><h1>从 Codex 到 DeepSeek Harness：四种 Agent 产品如何展示执行过程</h1><p class="article-dek">对比 Work、Codex、Claude Code 与 DeepSeek Harness 的界面选择：成果、变更、授权，还是完整 Runtime 轨迹。</p><div class="article-meta">发布 2026-08-18 · 约 14 分钟<span class="article-tags" aria-label="文章标签"><span>deepseek-harness</span><span>agent-ux</span><span>product-judgment</span><span>agent-observability</span></span></div></header>
       <div class="article-body">
-<p><strong>DeepSeek Harness 把原本常驻后台的 Agent Trace，做成了产品主界面的一部分。</strong></p>
+<p><strong>同样是让用户看见 Agent 的执行过程，四种产品选择了四种完全不同的界面重心。</strong></p>
 
-<p>在 Trajectory 页面里，一轮模型看到了什么、调用了哪个工具、工具返回了什么、子 Agent 如何展开、Token 和时间花在哪里，都可以沿着轨迹继续检查。</p>
+<p>Work 把来源与成果放在前面，Codex 聚焦文件变更与测试，Claude Code 强调计划、授权与恢复；DeepSeek Harness 则把模型、工具、子 Agent 和 Token 消耗组成一条可下钻的 Trajectory。</p>
 
-<p>Trace 本身并不新鲜。真正值得研究的是：DeepSeek 为什么要把它从故障排查时才打开的后台面板，提到用户日常使用的主界面？它主要服务谁？这种可见性又应该被其他 Agent 产品复制到什么程度？</p>
+<p>它们的差异不是“谁展示得更多”，而是分别把执行过程翻译成了用户需要验收的结果、审查的变更、控制的行动，或调试的 Runtime。</p>
 
 <div class="callout callout-abstract">
 <p class="callout-title">这篇文章真正想回答的问题</p>
 <p>Agent 的执行轨迹不是展示得越多越好。产品需要先判断：谁要看、他要据此判断什么、看到之后能采取什么动作。</p>
 </div>
 
-<p>这篇文章从 DeepSeek Harness 出发，先与 Work、Codex 和 Claude Code 对比，再解释一条 Trace 为什么能够成为产品对象，以及普通用户究竟应该看到哪一层。</p>
-
-<h2 id="why-stop">一、DeepSeek 为什么把 Trace 放进主界面</h2>
-
-<p>答案首先与目标用户有关。DeepSeek Harness 不是主要面向普通任务用户的办公 Agent，而是供 Agent 开发者观察和组装 Runtime 的 Harness。对这类用户来说，运行过程不是附属信息，本身就是工作对象。</p>
-
-<p>他们需要判断的不是“报告写完了吗”，而是：</p>
-
-<ul>
-<li>这次判断使用了哪段上下文；</li>
-<li>模型、工具与子 Agent 如何衔接；</li>
-<li>失败发生在模型、工具、插件还是调度层；</li>
-<li>替换某个组件后，运行路径、成本和结果改变了什么。</li>
-</ul>
-
-<p>因此，把 Trace 放进主界面并不是为了制造“透明感”，而是为了让开发、调试、归因和实验比较进入同一个工作台。尤其在“一切皆插件”的架构下，组件越容易替换，开发者越需要及时看见替换后的影响。</p>
-
-<blockquote><p>DeepSeek Harness 展示完整 Trace，是因为它的目标用户需要对 Runtime 负责。</p></blockquote>
-
-<h2 id="comparison">二、Work、Codex、Claude Code 与 DSH，其实在让用户判断不同的东西</h2>
+<h2 id="comparison">一、Work、Codex、Claude Code 与 DSH，在让用户判断什么</h2>
 
 <p>把这四款产品放在一起，差异并不只是“谁展示得更详细”，而是它们分别选择了不同的用户判断对象。</p>
 
@@ -75,6 +57,23 @@
 <p>Work 面向的是一项可交付的工作，所以过程最终要靠近文件和成果；Codex 面向代码仓库，所以 Git 变更是最可信的共同语言；Claude Code 强调一个会真实行动的编码搭档，因此授权与恢复被前置；DeepSeek Harness 面向 Harness 开发者，Runtime 本身就是需要观察和组装的产品对象。</p>
 
 <p>这也解释了为什么不能直接得出“DSH 的可见性更好”。完整 Trace 对 Harness 开发者是工作台，对只想验收结果的用户却可能是噪音。可见性的标准不是信息量，而是它是否贴近用户真正需要承担的判断。</p>
+
+<h2 id="why-stop">二、DeepSeek 为什么把 Trace 放进主界面</h2>
+
+<p>答案首先与目标用户有关。DeepSeek Harness 不是主要面向普通任务用户的办公 Agent，而是供 Agent 开发者观察和组装 Runtime 的 Harness。对这类用户来说，运行过程不是附属信息，本身就是工作对象。</p>
+
+<p>他们需要判断的不是“报告写完了吗”，而是：</p>
+
+<ul>
+<li>这次判断使用了哪段上下文；</li>
+<li>模型、工具与子 Agent 如何衔接；</li>
+<li>失败发生在模型、工具、插件还是调度层；</li>
+<li>替换某个组件后，运行路径、成本和结果改变了什么。</li>
+</ul>
+
+<p>因此，把 Trace 放进主界面并不是为了制造“透明感”，而是为了让开发、调试、归因和实验比较进入同一个工作台。尤其在“一切皆插件”的架构下，组件越容易替换，开发者越需要及时看见替换后的影响。</p>
+
+<blockquote><p>DeepSeek Harness 展示完整 Trace，是因为它的目标用户需要对 Runtime 负责。</p></blockquote>
 
 <h2 id="not-log">三、Trace 不是一条更长的日志</h2>
 
