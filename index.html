@@ -96,12 +96,6 @@
               <a class="button button-accent" href="#lighttrace">查看代表项目</a>
             </div>
             <a class="hero-note-link" href="./blog.html">或先阅读我的产品笔记 ↗</a>
-            <dl class="hero-proof-grid" aria-label="AI 产品经理四个证据锚点">
-              <div><dt>企业级</dt><dd>复杂系统 × AI 应用</dd></div>
-              <div><dt>0→1</dt><dd>产品定义 · MVP · 上线迭代</dd></div>
-              <div><dt>Owner</dt><dd>跨部门推进 · Agent 架构</dd></div>
-              <div><dt>2 项</dt><dd>授权发明专利 · 第一作者 1 项</dd></div>
-            </dl>
           </div>
         </div>
       </section>
@@ -494,6 +488,12 @@
       canvas.setAttribute('aria-hidden', 'true');
       hero.prepend(canvas);
       const ctx = canvas.getContext('2d');
+      const pointerFieldEnabled = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 761px)').matches;
+      const floatCards = pointerFieldEnabled ? Array.from(hero.querySelectorAll('.hero-float')) : [];
+      const floatDepths = [0.72, 0.92, 1.08, 0.82];
+      const floatMotion = floatCards.map(() => ({ x: 0, y: 0, tx: 0, ty: 0 }));
+      const heroCta = pointerFieldEnabled ? hero.querySelector('.button-accent') : null;
+      const ctaMotion = { x: 0, y: 0, tx: 0, ty: 0 };
       const pointer = { x: 0.5, y: 0.46, tx: 0.5, ty: 0.46 };
       const particles = Array.from({ length: 46 }, (_, index) => ({
         angle: (index / 46) * Math.PI * 2,
@@ -522,6 +522,18 @@
       const draw = (time) => {
         pointer.x += (pointer.tx - pointer.x) * 0.045;
         pointer.y += (pointer.ty - pointer.y) * 0.045;
+        floatMotion.forEach((motion, index) => {
+          motion.x += (motion.tx - motion.x) * 0.105;
+          motion.y += (motion.ty - motion.y) * 0.105;
+          floatCards[index].style.setProperty('--hero-shift-x', `${motion.x.toFixed(2)}px`);
+          floatCards[index].style.setProperty('--hero-shift-y', `${motion.y.toFixed(2)}px`);
+        });
+        if (heroCta) {
+          ctaMotion.x += (ctaMotion.tx - ctaMotion.x) * 0.14;
+          ctaMotion.y += (ctaMotion.ty - ctaMotion.y) * 0.14;
+          heroCta.style.setProperty('--hero-cta-x', `${ctaMotion.x.toFixed(2)}px`);
+          heroCta.style.setProperty('--hero-cta-y', `${ctaMotion.y.toFixed(2)}px`);
+        }
         ctx.clearRect(0, 0, width, height);
 
         const cx = width * (0.5 + (pointer.x - 0.5) * 0.035);
@@ -553,10 +565,46 @@
 
       hero.addEventListener('pointermove', (event) => {
         const rect = hero.getBoundingClientRect();
-        pointer.tx = (event.clientX - rect.left) / rect.width;
-        pointer.ty = (event.clientY - rect.top) / rect.height;
+        if (pointerFieldEnabled) {
+          pointer.tx = (event.clientX - rect.left) / rect.width;
+          pointer.ty = (event.clientY - rect.top) / rect.height;
+          const offsetX = pointer.tx - 0.5;
+          const offsetY = pointer.ty - 0.5;
+          let closestCard = null;
+          let closestDistance = Math.min(rect.width, rect.height) * 0.42;
+
+          floatCards.forEach((card, index) => {
+            const depth = floatDepths[index];
+            floatMotion[index].tx = offsetX * 18 * depth;
+            floatMotion[index].ty = offsetY * 13 * depth;
+            const cardRect = card.getBoundingClientRect();
+            const distance = Math.hypot(event.clientX - (cardRect.left + cardRect.width / 2), event.clientY - (cardRect.top + cardRect.height / 2));
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestCard = card;
+            }
+          });
+          floatCards.forEach((card) => card.classList.toggle('is-pointer-near', card === closestCard));
+
+          if (heroCta) {
+            const ctaRect = heroCta.getBoundingClientRect();
+            const ctaDx = event.clientX - (ctaRect.left + ctaRect.width / 2);
+            const ctaDy = event.clientY - (ctaRect.top + ctaRect.height / 2);
+            const ctaDistance = Math.hypot(ctaDx, ctaDy);
+            const attraction = Math.max(0, 1 - ctaDistance / 120);
+            ctaMotion.tx = Math.max(-7, Math.min(7, ctaDx * 0.11 * attraction));
+            ctaMotion.ty = Math.max(-5, Math.min(5, ctaDy * 0.09 * attraction));
+          }
+        }
       }, { passive: true });
-      hero.addEventListener('pointerleave', () => { pointer.tx = 0.5; pointer.ty = 0.46; }, { passive: true });
+      hero.addEventListener('pointerleave', () => {
+        pointer.tx = 0.5;
+        pointer.ty = 0.46;
+        floatMotion.forEach((motion) => { motion.tx = 0; motion.ty = 0; });
+        floatCards.forEach((card) => card.classList.remove('is-pointer-near'));
+        ctaMotion.tx = 0;
+        ctaMotion.ty = 0;
+      }, { passive: true });
       window.addEventListener('resize', resize, { passive: true });
       resize();
       raf = requestAnimationFrame(draw);
